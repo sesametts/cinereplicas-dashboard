@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- sync: 2026-07-02 11:45 (ajout mois d'avril) -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord Cinereplicas — TikTok Shop France</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f5f7; color: #1a1a1a; padding: 24px; line-height: 1.4; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+.head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.title { display: flex; align-items: center; gap: 12px; }
+.brand-badge { width: 44px; height: 44px; border-radius: 10px; background: #001f5b; border: 2px solid #c9a227; color: #c9a227; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+h1 { font-size: 22px; font-weight: 700; }
+.sub { color: #6b7280; font-size: 13px; margin-top: 2px; }
+.updated { color: #9ca3af; font-size: 12px; }
+.month-bar { display: flex; align-items: center; gap: 10px; margin: 20px 0 4px; flex-wrap: wrap; }
+.month-bar .lbl { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #9ca3af; margin-right: 4px; }
+.month-pill { border: 1px solid #d8dce1; background: #fff; color: #374151; padding: 8px 16px; border-radius: 999px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+.month-pill.active { background: #001f5b; border-color: #001f5b; color: #fff; }
+.month-pill.active::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #c9a227; }
+.month-pill.soon { color: #b6bcc4; border-style: dashed; cursor: not-allowed; }
+.month-pill .tag { font-size: 10px; font-weight: 600; color: #b6bcc4; }
+.section-label { background: #001f5b; color: #fff; font-size: 17px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 17px 22px; border-radius: 12px; border-left: 6px solid #c9a227; margin: 38px 0 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,31,91,.15); }
+.section-label::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #c9a227; flex-shrink: 0; }
+.section-label .sl-note { margin-left:auto; font-size:11px; font-weight:400; letter-spacing:0; text-transform:none; color:#ffffff; opacity:.72; }
+.period-bar { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; margin: 16px 0 8px; font-size: 13px; color: #374151; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.period-bar b { color: #111; }
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.cards.ads { grid-template-columns: repeat(5, 1fr); }
+.cards.c3 { grid-template-columns: repeat(3, 1fr); }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 18px; }
+.card .label { font-size: 13px; color: #6b7280; font-weight: 500; }
+.card .label .tip { cursor: help; color: #9ca3af; font-size: 12px; margin-left: 3px; }
+.card .value { font-size: 24px; font-weight: 800; margin: 6px 0 4px; letter-spacing: -0.5px; }
+.delta { font-size: 13px; font-weight: 600; }
+.delta.down { color: #dc2626; } .delta.up { color: #16a34a; } .delta.flat { color: #9ca3af; }
+.cards.camp { grid-template-columns: repeat(4, 1fr); margin-top: 14px; }
+.cards.camp .card { background: #f9fafb; }
+.cards.camp .value { font-size: 20px; }
+.cards.camp .card:first-child { background: #ecfdf5; border-color: #a7f3d0; }
+.cards.camp .card:nth-child(2) { background: #eff6ff; border-color: #bfdbfe; }
+.grid2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; margin-top: 14px; }
+.panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px; }
+.panel h2 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.panel .hint { font-size: 12px; color: #9ca3af; margin-bottom: 14px; }
+.chart-box { position: relative; height: 240px; }
+.bd-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #f1f1f1; font-size: 14px; }
+.bd-row:last-child { border-bottom: none; }
+.bd-left { display: flex; align-items: center; gap: 9px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.bd-val { font-weight: 700; }
+.bd-pct { color: #6b7280; font-size: 12px; font-weight: 500; margin-left: 6px; }
+.rank-note { margin-top: 14px; font-size: 13px; color: #374151; background: #f9fafb; border-radius: 10px; padding: 12px 14px; }
+.rank-note b { color: #111; }
+.note { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 12px; padding: 14px 18px; font-size: 13px; margin: 8px 0; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.tbl th { text-align: right; color: #6b7280; font-weight: 600; padding: 10px 8px; border-bottom: 2px solid #eef0f2; white-space: nowrap; }
+table.tbl th:first-child { text-align: left; }
+table.tbl td { text-align: right; padding: 11px 8px; border-bottom: 1px solid #f1f1f1; white-space: nowrap; }
+table.tbl td:first-child { text-align: left; }
+.cr { display: flex; align-items: center; gap: 10px; }
+.cr-av { width: 30px; height: 30px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; display:flex; align-items:center; justify-content:center; font-weight:700; color:#6b7280; font-size:12px; }
+.cr-name { font-weight: 700; } .cr-sub { color: #9ca3af; font-size: 11px; }
+.funnel-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; font-size: 14px; border-bottom: 1px solid #f4f4f4; }
+.funnel-row:last-child { border-bottom: none; }
+.funnel-bar { height: 22px; border-radius: 5px; background: #14b8a6; opacity: .85; }
+.tvbtn { border:1px solid #d8dce1; background:#fff; color:#374151; padding:6px 14px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer; margin-left:6px; }
+.tvbtn.active { background:#001f5b; border-color:#001f5b; color:#fff; }
+.vtbl th:nth-child(2), .vtbl th:nth-child(3), .vtbl td:nth-child(2), .vtbl td:nth-child(3) { text-align:left; }
+.vtbl td:nth-child(3) { white-space:normal; }
+.vt-title { color:#374151; font-size:12px; max-width:340px; display:inline-block; line-height:1.3; }
+.vt-cr { font-weight:700; color:#111; }
+tr.has-sale { background:#f0fdf4; }
+.sale-yes { color:#16a34a; font-weight:800; }
+.sale-no { color:#cbd5e1; }
+.foot { margin-top: 26px; font-size: 12px; color: #9ca3af; text-align: center; }
+@media (max-width: 820px) { .cards, .cards.ads, .cards.camp, .cards.c3 { grid-template-columns: repeat(2, 1fr); } .grid2 { grid-template-columns: 1fr; } .tbl-wrap { overflow-x: auto; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="title">
+      <div class="brand-badge">C</div>
+      <div>
+        <h1>Tableau de bord Cinereplicas — TikTok Shop France</h1>
+        <div class="sub">Mise à jour le lundi et le mercredi à 9h45 · données du Seller Center</div>
+      </div>
+    </div>
+    <div class="updated">Mis à jour le <span id="updated"></span></div>
+  </div>
+
+  <div class="month-bar">
+    <span class="lbl">Mois</span>
+    <span id="pills" style="display:flex;gap:10px;flex-wrap:wrap;"></span>
+  </div>
+
+  <!-- VENDEUR -->
+  <div class="section-label">Vendeur · Analyses de la boutique<span class="sl-note">Données à jour (aujourd'hui)</span></div>
+  <div class="period-bar"><div>Période : <b id="s_period"></b> &nbsp;·&nbsp; <span id="s_compare"></span></div></div>
+  <div id="s_note"></div>
+  <div class="cards" id="s_cards"></div>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Répartition du GMV par type de contenu</h2>
+      <div class="hint">Basé sur le dernier type de contenu avant l'achat.</div>
+      <div class="chart-box"><canvas id="donut"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Détail</h2>
+      <div class="hint">GMV par canal sur la période.</div>
+      <div id="s_breakdown"></div>
+      <div class="rank-note">Classement GMV dans la catégorie : <b id="s_rank"></b></div>
+    </div>
+  </div>
+
+  <!-- PRODUITS VENDUS -->
+  <div class="section-label">Vendeur · Produits vendus<span class="sl-note">Hors échantillons · données à jour (aujourd'hui)</span></div>
+  <div class="period-bar"><div>Période : <b id="p_period"></b></div><div class="updated">Source : Manage orders</div></div>
+  <div id="p_src" class="note" style="display:none"></div>
+  <div class="cards" id="p_cards"></div>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Chiffre d'affaires par produit</h2>
+      <div class="hint">Commandes payées, hors échantillons gratuits et hors annulations.</div>
+      <div class="chart-box"><canvas id="pdonut"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Détail par produit</h2>
+      <div class="hint">CA, articles vendus et part du total.</div>
+      <div id="p_breakdown"></div>
+      <div class="rank-note" id="p_samples_note"></div>
+    </div>
+  </div>
+  <div id="p_table"></div>
+
+  <!-- SHOP ADS -->
+  <div class="section-label">Marketing · Shop ads (GMV Max)<span class="sl-note">Données à jour (aujourd'hui)</span></div>
+  <div class="period-bar"><div>Compte : <b>CINEREPLICAS FR</b> &nbsp;·&nbsp; Période : <b id="m_period"></b></div><div class="updated" id="m_cmp"></div></div>
+  <div id="m_note"></div>
+  <div class="cards ads" id="m_cards"></div>
+  <div class="panel" id="camp_panel" style="margin-top:14px;">
+    <h2 id="c_name"></h2>
+    <div class="hint" id="c_status"></div>
+    <div class="cards camp" id="c_items"></div>
+  </div>
+
+  <!-- AFFILIÉS PERFORMANCE -->
+  <div class="section-label">Affiliés · Performance (collaboration)<span class="sl-note">Données jusqu'à la veille (J-1)</span></div>
+  <div class="period-bar"><div>Période : <b id="af_period"></b> &nbsp;·&nbsp; <span id="af_compare"></span></div></div>
+  <div class="cards" id="af_cards"></div>
+  <div class="panel" style="margin-top:14px;">
+    <h2>Top créateurs</h2>
+    <div class="hint" id="cr_hint"></div>
+    <div id="cr_note"></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Créateur</th><th>GMV attribué</th><th>Remb.</th><th>Commission est.</th><th>Commandes</th><th>Articles vendus</th><th>Articles remb.</th><th>Vidéos</th></tr></thead>
+      <tbody id="cr_rows"></tbody>
+    </table></div>
+  </div>
+
+  <!-- VIDÉOS PUBLIÉES DU MOIS -->
+  <div class="section-label">Affiliés · Vidéos publiées du mois<span class="sl-note">Données jusqu'à la veille (J-1)</span></div>
+  <div class="period-bar"><div>Période : <b id="vd_period"></b></div><div class="updated">Ventes = GMV attribué aux vidéos publiées</div></div>
+  <div class="cards c3" id="vd_cards"></div>
+  <div id="vf_wrap"></div>
+  <div class="note" style="background:#f9fafb;border-color:#e5e7eb;color:#374151;margin-top:14px;font-size:13px;">
+    <b>Deux chiffres de vidéos différents :</b> « Vidéos » (bloc Performance) = activité attribuée sur la période (source Centre d'affiliation). « Vidéos publiées » = comptage par date de publication (écran All videos). Ce sont des sources différentes — les totaux peuvent différer.
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <h2>Vidéos publiées / jour &amp; ventes</h2>
+    <div class="hint">Barres = nb de vidéos publiées · Ligne = GMV généré par ces vidéos.</div>
+    <div class="chart-box" style="height:300px;"><canvas id="vdChart"></canvas></div>
+  </div>
+
+  <h2 style="margin:26px 0 6px;font-size:16px;color:#001f5b;">Détail — toutes les vidéos publiées</h2>
+  <div class="period-bar" id="tv_bar">
+    <div>Vidéos publiées en <b id="tv_period"></b> · <b id="tv_count"></b> vidéos · <span id="tv_sales"></span></div>
+    <div><button id="tv_all" class="tvbtn active">Toutes</button><button id="tv_sale" class="tvbtn">Avec vente</button></div>
+  </div>
+  <div id="tv_note"></div>
+  <div class="panel" id="tv_panel" style="margin-top:8px;">
+    <div class="hint">Chaque vidéo publiée ce mois (filtrée par date de publication), avec son créateur et son GMV attribué (shoppable video GMV). Le GMV attribué aux vidéos expire pour les mois anciens (affiché « — »). Source : Affiliés › Vidéos › All videos.</div>
+    <div class="tbl-wrap" style="max-height:520px;overflow-y:auto;">
+      <table class="tbl vtbl">
+        <thead><tr><th>Date</th><th>Créateur</th><th>Vidéo</th><th>Vues</th><th>Impressions</th><th>Clics</th><th>CTR</th><th>GMV attribué</th><th>Commandes</th><th>Vente</th><th>Lien</th></tr></thead>
+        <tbody id="tv_rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ÉCHANTILLONS -->
+  <div class="section-label">Affiliés · Échantillons (samples)<span class="sl-note">Données avec 3 jours de décalage</span></div>
+  <div class="period-bar"><div>Période : <b id="sa_period"></b></div></div>
+  <div class="cards c3" id="sa_cards"></div>
+  <div class="note" style="background:#f9fafb;border-color:#e5e7eb;color:#374151;margin-top:14px;">
+    <div style="margin-bottom:8px;"><b>COGS estimé</b> — L'estimation correspond à 30 % du prix de détail de tes produits d'essai expédiés. Tu peux ajuster cette valeur pour affiner le COGS de tes produits d'essai pour la période sélectionnée.</div>
+    <div><b>ROI sur 45 jours</b> — Pour le contenu publié au cours des 45 derniers jours, nous recueillons des données sur le GMV et le coût des marchandises vendues (COGS) pour estimer le retour sur investissement (ROI). Nous utilisons une période de 45 jours car il faut du temps au contenu pour générer des vues de vidéos et le GMV correspondant.</div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Échantillons expédiés — répartition</h2>
+      <div class="hint">Par type d'échantillon.</div>
+      <div class="chart-box" style="height:300px;max-width:330px;margin:0 auto;"><canvas id="sa_donut"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Tunnel de conversion</h2>
+      <div class="hint">Demandes d'échantillon → ventes · période de conversion réelle (mois sélectionné + ~45 j d'attribution). Source : Sample requests.</div>
+      <div id="funnel"></div>
+    </div>
+  </div>
+
+  <div style="display:none">
+  <!-- TAP — AGENCES PARTENAIRES -->
+  <div class="section-label">Affiliés · TAP — agences &amp; performance<span class="sl-note">Suivi manuel · performance ~J-2</span></div>
+  <div class="period-bar"><div>Programme TAP en <b id="tap_period"></b> &nbsp;·&nbsp; Produit : <b>Roselash Classique</b></div><div class="updated">TikTok Affiliate Program · agences tierces</div></div>
+  <div id="tap_wrap"></div>
+
+  <!-- TAP PERFORMANCE (même section) -->
+  <h2 style="margin:26px 0 6px;font-size:16px;color:#001f5b;">Performance par agence</h2>
+  <div class="period-bar"><div>Performance TAP · <b id="tperf_period"></b></div><div class="updated">Source : Work with partners › Performance by agency · ~J-2</div></div>
+  <div class="cards c3" id="tperf_cards"></div>
+  <div id="tperf_wrap"></div>
+  <div id="tperf_videos"></div>
+
+  </div>
+
+  <!-- ACTIONS / CAMPAGNES -->
+  <div class="section-label">Actions · Campagnes créateurs</div>
+  <div class="period-bar"><div>Actions menées en <b id="ac_period"></b></div></div>
+  <div id="ac_wrap"></div>
+
+  <div class="foot">Données extraites du TikTok Seller Center · Tableau de bord — Cinereplicas (Sesame)</div>
+</div>
+
+<script>
+const MONTHS = {
+  "2026-09": {
+    label: "Septembre 2026", updated: "Mois clôturé · données finales au 6 octobre 2026",
+    boutique: { period: "1er → 30 sept. 2026 · mois complet", compare: "comparé à 2 – 31 août 2026",
+      rank: "Catégorie · cinereplicas FR · 28e du classement GMV",
+      metrics: [ {label:"GMV",value:"65,80 €",delta:452.94}, {label:"Commandes",value:"2",delta:100}, {label:"Clients",value:"2",delta:100}, {label:"Articles vendus",value:"2",delta:100} ],
+      breakdown: [ {name:"Lives",value:0,pct:0.0,color:"#10b981"},{name:"Vidéos",value:36.9,pct:56.1,color:"#f5b301"},{name:"Fiches produit",value:28.9,pct:43.9,color:"#3b5bdb"} ] },
+    ads: { period: "1er → 30 sept. 2026 · mois complet", cmp: "Compte GMV Max · CINEREPLICAS FR · aucune campagne active", note: "Aucune dépense publicitaire sur la période : toutes les campagnes GMV Max du compte sont inactives.",
+      metrics: [ {label:"Coût",value:"0,00 €",delta:null}, {label:"Commandes SKU",value:"0",delta:null}, {label:"Coût / commande",value:"—",delta:null}, {label:"Revenu brut",value:"0,00 €",delta:null}, {label:"ROI",value:"—",delta:null} ] },
+    affiliate: { period:"1er → 29 sept. 2026 · dernier jour disponible lors de la collecte", compare:"comparé à août 2026 (aucune vente affiliée)",
+      metrics:[ {label:"GMV attribué (créateurs)",value:"36,90 €",delta:null}, {label:"Articles vendus",value:"1",delta:null}, {label:"Remboursements",value:"0,00 €",delta:null}, {label:"Commission est.",value:"3,00 €",delta:null}, {label:"Vidéos",value:"3",delta:null}, {label:"Lives",value:"0",delta:null}, {label:"Créateurs/jour (ventes)",value:"1",delta:null}, {label:"Créateurs/jour (contenu)",value:"1",delta:null} ],
+      creators: [{"name": "byromane0", "gmv": "36,90 €", "ref": "0 €", "com": "3,00 €", "ord": 1, "items": 1, "iref": 0, "vid": 0}] },
+    products: { period:"1er → 30 sept. 2026 · mois complet",
+      source:"Seller Centre › Gérer les commandes · commandes créées sur la période, hors échantillons gratuits (0 €) et hors commandes annulées.",
+      metrics:[ {label:"Chiffre d'affaires",value:"65,80 €",delta:null}, {label:"Commandes",value:"2",delta:null}, {label:"Articles vendus",value:"2",delta:null}, {label:"Panier moyen",value:"32,90 €",delta:null}, {label:"Échantillons offerts",value:"64",delta:null} ],
+      byProduct:[ {name:"Calendrier Harry Potter Hogwarts",value:36.9,qty:1,orders:1,pct:56.1,color:"#c9a227"},{name:"Calendrier KPop Demon Hunters",value:28.9,qty:1,orders:1,pct:43.9,color:"#3b5bdb"} ],
+      rows:[
+        {product:"Calendrier Harry Potter Hogwarts",sku:"Par défaut",qty:1,rev:"36,90 €",pct:"56,1 %"},
+        {product:"Calendrier KPop Demon Hunters",sku:"Par défaut",qty:1,rev:"28,90 €",pct:"43,9 %"}
+      ],
+      samples:[ {product:"Calendrier KPop Demon Hunters",qty:25},{product:"Calendrier Scène KPop Demon Hunters",qty:12},{product:"Calendrier Harry Potter Hogwarts",qty:12},{product:"Calendrier Brawl Stars Mega Box",qty:12},{product:"Calendrier Maillot des Bleus",qty:3} ],
+      samplesNote:"64 commandes d'échantillons (64 articles) créées sur la période, à 0 € — exclues du chiffre d'affaires. 2 commandes annulées également exclues." },
+    videosDaily: { period: "1er → 30 sept. 2026 · vidéos publiées dans la période", totalVideos:16, totalGmv:"0,00 €", totalOrders:0, days:["18/09", "24/09", "25/09", "26/09", "29/09", "30/09"], videos:[1, 2, 1, 3, 1, 8], gmv:[0.0, 0.0, 0.0, 0.0, 0.0, 0.0] },
+    videosListNote:"16 vidéos publiées du 1er au 30 sept. 2026 · 15 ont généré au moins un clic, 0 ont généré une vente (0,00 € au total). Les vidéos avec vente sont en haut, puis les autres par clics décroissants. 2 vidéo(s) sans date de publication renvoyée par TikTok rattachée(s) au 30/09. Le tableau inclut aussi 1 vidéo(s) publiée(s) avant le mois qui ont vendu sur la période (date complète JJ/MM/AAAA, 36,90 €) ; elles ne sont pas comptées dans le tunnel ni dans le graphique par jour.",
+    videoFunnel: { period:"1er → 30 sept. 2026 · 16 vidéos publiées",
+      note:"Parcours d'un spectateur : le produit s'affiche dans la vidéo (impression), il clique sur la fiche, puis il commande.",
+      steps:[
+        {label:"Impressions produit",value:"9 632",num:9632,rate:null,sub:"10 672 vues cumulées"},
+        {label:"Clics sur la fiche produit",value:"227",num:227,rate:"2,36 % des impressions",sub:"CTR moyen"},
+        {label:"Commandes",value:"0",num:0,rate:"0,00 % des clics",sub:"0 commandes"},
+        {label:"GMV généré",value:"0,00 €",num:0,rate:"—",sub:null}
+      ],
+      videoSteps:[ {label:"Vidéos publiées",value:16,rate:null},{label:"Vidéos ayant généré un clic",value:15,rate:"93,8 %"},{label:"Vidéos ayant généré une vente",value:0,rate:"0,0 %"} ],
+      insight:"Peu de volume ce mois-ci : 16 vidéos publiées, 227 clics, aucune commande attribuée aux vidéos du mois. Les ventes viennent de vidéos plus anciennes ou des fiches produit." },
+    videosList: [
+      {date:"17/10/2025",creator:"byromane0",title:"#ad #harrpypotter #fyp #calendrierdelavent #calend",views:137,imp:179,clicks:4,ctr:"2,23 %",orders:1,gmv:36.9,sale:true,link:"https://www.tiktok.com/@byromane0/video/7562132323920088342"},
+      {date:"18/09",creator:"vincent_shop_",title:"#ad",views:2302,imp:1644,clicks:28,ctr:"1,70 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@vincent_shop_/video/7686788105680047393"},
+      {date:"24/09",creator:"leadershop07",title:"#ad #offrepourtoi #dufraispourlautomme",views:1748,imp:1783,clicks:28,ctr:"1,57 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@leadershop07/video/7689086059178708256"},
+      {date:"30/09",creator:"happyness3103",title:"#ad #calendrier #kpopdemonhunter #calendrierdelave",views:550,imp:554,clicks:27,ctr:"4,87 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@happyness3103/video/7691309491710610720"},
+      {date:"26/09",creator:"mochiti14",title:"#ad Un cadeau absolument Génial le calendrier de l",views:555,imp:566,clicks:24,ctr:"4,24 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@mochiti14/video/7689862509871828256"},
+      {date:"30/09",creator:"sandra_btaa",title:"#ad",views:491,imp:465,clicks:24,ctr:"5,16 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sandra_btaa/video/7691384286221536545"},
+      {date:"30/09",creator:"happyness3103",title:"#ad #calendrier #kpopdemonhunter #calendrierdelave",views:434,imp:448,clicks:18,ctr:"4,02 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@happyness3103/video/7691307370047229216"},
+      {date:"30/09",creator:"bylaucnvt",title:"",views:614,imp:609,clicks:15,ctr:"2,46 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bylaucnvt/video/7690535685048012065"},
+      {date:"30/09",creator:"meilhina",title:"#ad Hésite pas si tu le veux avant qu’il ne soit e",views:508,imp:502,clicks:14,ctr:"2,79 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@meilhina/video/7691425228588682529"},
+      {date:"26/09",creator:"mochiti14",title:"#ad Calendrier de l'avent Brawl stars soigneusemen",views:560,imp:570,clicks:13,ctr:"2,28 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@mochiti14/video/7689894205862251808"},
+      {date:"26/09",creator:"mochiti14",title:"#ad Le calendrier de l'avent Brawl star est déjà d",views:487,imp:494,clicks:11,ctr:"2,23 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@mochiti14/video/7689888124561935649"},
+      {date:"30/09",creator:"niataki77",title:"#ad #calendrierdelavent #harrypottertiktok #tiktok",views:418,imp:408,clicks:10,ctr:"2,45 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@niataki77/video/7691392673873153313"},
+      {date:"29/09",creator:"central_select_store",title:"#ad Quand la magie de KPop Demon Hunters rencontre",views:723,imp:352,clicks:6,ctr:"1,70 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@central_select_store/video/7691004025587780896"},
+      {date:"30/09",creator:"higkobx",title:"",views:426,imp:400,clicks:5,ctr:"1,25 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@higkobx/video/7690608122423020833"},
+      {date:"30/09",creator:"lolotaz12",title:"#ad J'étais tellement excité à ce sujet! Ce sont l",views:149,imp:141,clicks:3,ctr:"2,13 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lolotaz12/video/7691298896504573217"},
+      {date:"25/09",creator:"niataki77",title:"#ad",views:318,imp:316,clicks:1,ctr:"0,32 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@niataki77/video/7689377636358950177"},
+      {date:"24/09",creator:"leadershop07",title:"#ad #offrepourtoi #dufraispourlautomme",views:389,imp:380,clicks:0,ctr:"0,00 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@leadershop07/video/7689082063424703777"}
+    ],
+    samples: { period:"Septembre 2026 · mois complet",
+      metrics:[ {label:"Échantillons expédiés",value:"38",delta:null}, {label:"Content GMV",value:"36,90 €",delta:null}, {label:"COGS est.",value:"415,83 €",delta:null}, {label:"Frais de port est.",value:"0,00 €",delta:null}, {label:"Contenus",value:"4",delta:null}, {label:"ROI 45 jours",value:"0,00",delta:null} ],
+      breakdown:[ {name:"Échantillon gratuit",value:23,color:"#14b8a6"},{name:"Approuvé manuel (collab. ciblée)",value:15,color:"#3b5bdb"} ],
+      funnelNote:"Funnel « Échantillon gratuit » (onglet Demandes de produits d'essai) : aucune donnée de conversion remontée par TikTok sur cette période.",
+      funnel:[] },
+    tap: [],
+    tapPerf: null,
+    actions: []
+  },
+  "2026-10": {
+    label: "Octobre 2026", updated: "6 octobre 2026 · mise à jour lundi et mercredi 9h45",
+    boutique: { period: "1er → 6 oct. 2026 · mois en cours (J-0)", compare: "comparé à 25 – 30 sept. 2026",
+      rank: "Catégorie · cinereplicas FR · 28e du classement GMV",
+      metrics: [ {label:"GMV",value:"8 365,32 €",delta:12613.25}, {label:"Commandes",value:"229",delta:11350}, {label:"Clients",value:"225",delta:11150}, {label:"Articles vendus",value:"234",delta:11600} ],
+      breakdown: [ {name:"Lives",value:42.9,pct:0.5,color:"#10b981"},{name:"Vidéos",value:7960.32,pct:95.2,color:"#f5b301"},{name:"Fiches produit",value:362.1,pct:4.3,color:"#3b5bdb"} ] },
+    ads: { period: "1er → 6 oct. 2026 · mois en cours (J-0)", cmp: "Compte GMV Max · CINEREPLICAS FR · aucune campagne active", note: "Aucune dépense publicitaire sur la période : toutes les campagnes GMV Max du compte sont inactives.",
+      metrics: [ {label:"Coût",value:"0,00 €",delta:null}, {label:"Commandes SKU",value:"0",delta:null}, {label:"Coût / commande",value:"—",delta:null}, {label:"Revenu brut",value:"0,00 €",delta:null}, {label:"ROI",value:"—",delta:null} ] },
+    affiliate: { period:"1er → 4 oct. 2026 · dernières données disponibles (J-2)", compare:"comparé à 27 – 30 sept. 2026",
+      metrics:[ {label:"GMV attribué (créateurs)",value:"6 578,62 €",delta:null}, {label:"Articles vendus",value:"187",delta:null}, {label:"Remboursements",value:"0,00 €",delta:null}, {label:"Commission est.",value:"690,50 €",delta:null}, {label:"Vidéos",value:"139",delta:null}, {label:"Lives",value:"20",delta:null}, {label:"Créateurs/jour (ventes)",value:"11",delta:null}, {label:"Créateurs/jour (contenu)",value:"27",delta:null} ],
+      creators: [{"name": "mariformm", "gmv": "3 298,42 €", "ref": "0 €", "com": "352,8 €", "ord": 97, "items": 98, "iref": 0, "vid": 2}, {"name": "sandra_btaa", "gmv": "577,3 €", "ref": "0 €", "com": "68,4 €", "ord": 19, "items": 19, "iref": 0, "vid": 6}, {"name": "ambrinebonsplans", "gmv": "488,6 €", "ref": "0 €", "com": "54 €", "ord": 15, "items": 15, "iref": 0, "vid": 4}, {"name": "niataki77", "gmv": "400,2 €", "ref": "0 €", "com": "36 €", "ord": 8, "items": 8, "iref": 0, "vid": 4}, {"name": "bonplandenils", "gmv": "320,9 €", "ref": "0 €", "com": "35,4 €", "ord": 10, "items": 10, "iref": 0, "vid": 2}, {"name": "meilhina", "gmv": "212,5 €", "ref": "0 €", "com": "21,6 €", "ord": 5, "items": 6, "iref": 0, "vid": 3}, {"name": "sisii10120", "gmv": "190,6 €", "ref": "0 €", "com": "18 €", "ord": 4, "items": 4, "iref": 0, "vid": 5}, {"name": "theocourantdetout", "gmv": "172,6 €", "ref": "0 €", "com": "16,2 €", "ord": 4, "items": 4, "iref": 0, "vid": 11}, {"name": "happyness3103", "gmv": "154,6 €", "ref": "0 €", "com": "14,4 €", "ord": 4, "items": 4, "iref": 0, "vid": 0}, {"name": "sachajibril", "gmv": "123,7 €", "ref": "0 €", "com": "14,4 €", "ord": 3, "items": 4, "iref": 0, "vid": 3}, {"name": "lahottetiktok", "gmv": "103,8 €", "ref": "0 €", "com": "9 €", "ord": 2, "items": 2, "iref": 0, "vid": 8}, {"name": "mombearshop", "gmv": "88,1 €", "ref": "0 €", "com": "10,8 €", "ord": 3, "items": 3, "iref": 0, "vid": 1}, {"name": "joey.pour.les.intimes", "gmv": "51,9 €", "ref": "0 €", "com": "4,5 €", "ord": 1, "items": 1, "iref": 0, "vid": 2}, {"name": "lolyta.ugc", "gmv": "51,9 €", "ref": "0 €", "com": "4,5 €", "ord": 1, "items": 1, "iref": 0, "vid": 1}, {"name": "elys.tentation.music", "gmv": "51,9 €", "ref": "0 €", "com": "4,5 €", "ord": 1, "items": 1, "iref": 0, "vid": 3}, {"name": "xbner", "gmv": "46,9 €", "ref": "0 €", "com": "4 €", "ord": 1, "items": 1, "iref": 0, "vid": 13}, {"name": "bylaucnvt", "gmv": "46,9 €", "ref": "0 €", "com": "4 €", "ord": 1, "items": 1, "iref": 0, "vid": 2}, {"name": "captainavenger12", "gmv": "42,9 €", "ref": "0 €", "com": "3,6 €", "ord": 1, "items": 1, "iref": 0, "vid": 0}, {"name": "priscillatagada", "gmv": "42,9 €", "ref": "0 €", "com": "3,6 €", "ord": 1, "items": 1, "iref": 0, "vid": 1}, {"name": "vroummm81", "gmv": "42,9 €", "ref": "0 €", "com": "3,6 €", "ord": 1, "items": 1, "iref": 0, "vid": 0}] },
+    products: { period:"1er → 6 oct. 2026 · mois en cours (J-0)",
+      source:"Seller Centre › Gérer les commandes · commandes créées sur la période, hors échantillons gratuits (0 €) et hors commandes annulées.",
+      metrics:[ {label:"Chiffre d'affaires",value:"8 177,87 €",delta:null}, {label:"Commandes",value:"223",delta:null}, {label:"Articles vendus",value:"228",delta:null}, {label:"Panier moyen",value:"36,67 €",delta:null}, {label:"Échantillons offerts",value:"39",delta:null} ],
+      byProduct:[ {name:"Calendrier KPop Demon Hunters",value:6231.18,qty:186,orders:183,pct:76.2,color:"#c9a227"},{name:"Calendrier Maillot des Bleus",value:850.3,qty:17,orders:17,pct:10.4,color:"#3b5bdb"},{name:"Calendrier Brawl Stars Mega Box",value:563.49,qty:13,orders:13,pct:6.9,color:"#14b8a6"},{name:"Calendrier Scène KPop Demon Hunters",value:277.4,qty:6,orders:6,pct:3.4,color:"#e64c9e"},{name:"Calendrier One Piece Chopper",value:225.55,qty:5,orders:5,pct:2.8,color:"#f97316"},{name:"Calendrier Harry Potter Hogwarts",value:29.95,qty:1,orders:1,pct:0.4,color:"#8b5cf6"} ],
+      rows:[
+        {product:"Calendrier KPop Demon Hunters",sku:"Par défaut",qty:186,rev:"6 231,18 €",pct:"76,2 %"},
+        {product:"Calendrier Maillot des Bleus",sku:"Par défaut",qty:17,rev:"850,30 €",pct:"10,4 %"},
+        {product:"Calendrier Brawl Stars Mega Box",sku:"Par défaut",qty:13,rev:"563,49 €",pct:"6,9 %"},
+        {product:"Calendrier Scène KPop Demon Hunters",sku:"Par défaut",qty:6,rev:"277,40 €",pct:"3,4 %"},
+        {product:"Calendrier One Piece Chopper",sku:"Par défaut",qty:5,rev:"225,55 €",pct:"2,8 %"},
+        {product:"Calendrier Harry Potter Hogwarts",sku:"Par défaut",qty:1,rev:"29,95 €",pct:"0,4 %"}
+      ],
+      samples:[ {product:"Calendrier KPop Demon Hunters",qty:18},{product:"Calendrier Maillot des Bleus",qty:9},{product:"Calendrier Scène KPop Demon Hunters",qty:5},{product:"Calendrier Harry Potter Hogwarts",qty:5},{product:"Calendrier Brawl Stars Mega Box",qty:4},{product:"Calendrier One Piece Chopper",qty:2} ],
+      samplesNote:"39 commandes d'échantillons (43 articles) créées sur la période, à 0 € — exclues du chiffre d'affaires. 38 commandes annulées également exclues." },
+    videosDaily: { period: "1er → 4 oct. 2026 · vidéos publiées dans la période", totalVideos:139, totalGmv:"5 599,27 €", totalOrders:156, days:["01/10", "02/10", "03/10", "04/10"], videos:[26, 29, 42, 42], gmv:[4332.89, 393.64, 641.6, 231.14] },
+    videosListNote:"139 vidéos publiées du 1er au 4 oct. 2026 (dernier jour disponible : J-2) · 137 ont généré au moins un clic, 23 ont généré une vente (5 599,27 € au total). Les vidéos avec vente sont en haut, puis les autres par clics décroissants. 2 vidéo(s) sans date de publication renvoyée par TikTok rattachée(s) au 04/10. Le tableau inclut aussi 6 vidéo(s) publiée(s) avant le mois qui ont vendu sur la période (date complète JJ/MM/AAAA, 850,65 €) ; elles ne sont pas comptées dans le tunnel ni dans le graphique par jour.",
+    videoFunnel: { period:"1er → 4 oct. 2026 · 139 vidéos publiées",
+      note:"Parcours d'un spectateur : le produit s'affiche dans la vidéo (impression), il clique sur la fiche, puis il commande.",
+      steps:[
+        {label:"Impressions produit",value:"2 277 877",num:2277877,rate:null,sub:"2 230 969 vues cumulées"},
+        {label:"Clics sur la fiche produit",value:"37 055",num:37055,rate:"1,63 % des impressions",sub:"CTR moyen"},
+        {label:"Commandes",value:"156",num:156,rate:"0,42 % des clics",sub:"156 commandes"},
+        {label:"GMV généré",value:"5 599,27 €",num:156,rate:"35,89 € par commande",sub:null}
+      ],
+      videoSteps:[ {label:"Vidéos publiées",value:139,rate:null},{label:"Vidéos ayant généré un clic",value:137,rate:"98,6 %"},{label:"Vidéos ayant généré une vente",value:23,rate:"16,5 %"} ],
+      insight:"Le créatif accroche (CTR 1,63 %, 99 % des vidéos génèrent un clic) et la conversion après clic est de 0,42 % : 37 055 clics → 156 commandes. Le GMV est très concentré : la meilleure vidéo pèse 58 % du total." },
+    videosList: [
+      {date:"01/10",creator:"mariformm",title:"#ad",views:1288413,imp:1319833,clicks:20176,ctr:"1,53 %",orders:96,gmv:3266.64,sale:true,link:"https://www.tiktok.com/@mariformm/video/7691745273458003232"},
+      {date:"30/09/2026",creator:"sandra_btaa",title:"#ad",views:238889,imp:245375,clicks:5392,ctr:"2,20 %",orders:16,gmv:507.5,sale:true,link:"https://www.tiktok.com/@sandra_btaa/video/7691384286221536545"},
+      {date:"01/10",creator:"ambrinebonsplans",title:"#ad #kpopdemonhunter #calendrierdelavent #offrespo",views:205959,imp:211115,clicks:2779,ctr:"1,32 %",orders:15,gmv:488.55,sale:true,link:"https://www.tiktok.com/@ambrinebonsplans/video/7691706778450464032"},
+      {date:"03/10",creator:"niataki77",title:"#ad #calendrierdelavent #France #FFF #offrespourto",views:115295,imp:116911,clicks:1857,ctr:"1,59 %",orders:8,gmv:400.2,sale:true,link:"https://www.tiktok.com/@niataki77/video/7692402515211488544"},
+      {date:"01/10",creator:"sisii10120",title:"#ad Calendrier de l'Avent Maillot des Bleus 2026 #",views:34763,imp:35477,clicks:1126,ctr:"3,17 %",orders:4,gmv:190.6,sale:true,link:"https://www.tiktok.com/@sisii10120/video/7691742311792889121"},
+      {date:"30/09/2026",creator:"meilhina",title:"#ad Hésite pas si tu le veux avant qu’il ne soit e",views:15226,imp:16290,clicks:423,ctr:"2,60 %",orders:4,gmv:154.6,sale:true,link:"https://www.tiktok.com/@meilhina/video/7691425228588682529"},
+      {date:"04/10",creator:"bonplandenils",title:"#ad #kpop #calendrierdelavent #OffresPourToi #Dufr",views:58622,imp:60026,clicks:448,ctr:"0,75 %",orders:5,gmv:153.34,sale:true,link:"https://www.tiktok.com/@bonplandenils/video/7692807787507698976"},
+      {date:"03/10",creator:"bonplandenils",title:"#ad #kpop #calendrierdelavent #OffresPourToi #Dufr",views:48153,imp:48992,clicks:595,ctr:"1,21 %",orders:4,gmv:137.6,sale:true,link:"https://www.tiktok.com/@bonplandenils/video/7692437919771987233"},
+      {date:"02/10",creator:"mombearshop",title:"#ad #offrespourtoi #dufraispourlautomne #kpop #cal",views:76832,imp:76833,clicks:1675,ctr:"2,18 %",orders:3,gmv:88.07,sale:true,link:"https://www.tiktok.com/@mombearshop/video/7691623724860067105"},
+      {date:"02/10",creator:"theocourantdetout",title:"#ad",views:19208,imp:19993,clicks:667,ctr:"3,34 %",orders:2,gmv:86.85,sale:true,link:"https://www.tiktok.com/@theocourantdetout/video/7692031384679943456"},
+      {date:"30/09/2026",creator:"happyness3103",title:"#ad #calendrier #kpopdemonhunter #calendrierdelave",views:6893,imp:7140,clicks:233,ctr:"3,26 %",orders:2,gmv:85.8,sale:true,link:"https://www.tiktok.com/@happyness3103/video/7691307370047229216"},
+      {date:"02/10",creator:"theocourantdetout",title:"#ad",views:7869,imp:8027,clicks:165,ctr:"2,06 %",orders:2,gmv:85.8,sale:true,link:"https://www.tiktok.com/@theocourantdetout/video/7692037006704037152"},
+      {date:"01/10",creator:"sachajibril",title:"#ad",views:7285,imp:7430,clicks:148,ctr:"1,99 %",orders:1,gmv:71.9,sale:true,link:"https://www.tiktok.com/@sachajibril/video/7691722082962443553"},
+      {date:"01/10",creator:"sandra_btaa",title:"#ad Réponse à @itsgirls",views:30297,imp:31171,clicks:338,ctr:"1,08 %",orders:3,gmv:69.8,sale:true,link:"https://www.tiktok.com/@sandra_btaa/video/7691722440556219681"},
+      {date:"02/10",creator:"meilhina",title:"#ad Dépêche toi avant qu’il soit en rupture #kpopd",views:1209,imp:1225,clicks:24,ctr:"1,96 %",orders:1,gmv:57.9,sale:true,link:"https://www.tiktok.com/@meilhina/video/7692073308287716641"},
+      {date:"01/10",creator:"joey.pour.les.intimes",title:"#ad @cinereplicas FR @cinereplicas FR @Netflix #de",views:9247,imp:9526,clicks:501,ctr:"5,26 %",orders:1,gmv:51.9,sale:true,link:"https://www.tiktok.com/@joey.pour.les.intimes/video/7691681615151484192"},
+      {date:"01/10",creator:"lahottetiktok",title:"#ad #tiktokshop #football #equipedefrance #calendr",views:3817,imp:3915,clicks:120,ctr:"3,07 %",orders:1,gmv:51.9,sale:true,link:"https://www.tiktok.com/@lahottetiktok/video/7691737873485139232"},
+      {date:"03/10",creator:"lolyta.ugc",title:"#ad Le cadeau parfait pour les fans de KPop Demon",views:1056,imp:1123,clicks:27,ctr:"2,40 %",orders:1,gmv:51.9,sale:true,link:"https://www.tiktok.com/@lolyta.ugc/video/7692396997017423136"},
+      {date:"03/10",creator:"elys.tentation.music",title:"#ad #bestseller #tiktokshop #lesbleus #france #cal",views:785,imp:743,clicks:18,ctr:"2,42 %",orders:1,gmv:51.9,sale:true,link:"https://www.tiktok.com/@elys.tentation.music/video/7692448159204707617"},
+      {date:"04/10",creator:"lahottetiktok",title:"#ad #lesbleus #fanfoot #coffretcadeau #noelfootbal",views:692,imp:696,clicks:12,ctr:"1,72 %",orders:1,gmv:51.9,sale:true,link:"https://www.tiktok.com/@lahottetiktok/video/7692671524595191072"},
+      {date:"01/10",creator:"sachajibril",title:"#ad",views:10285,imp:10507,clicks:183,ctr:"1,74 %",orders:2,gmv:51.8,sale:true,link:"https://www.tiktok.com/@sachajibril/video/7691722697537047840"},
+      {date:"09/2026",creator:"bylaucnvt",title:"",views:11307,imp:11663,clicks:250,ctr:"2,14 %",orders:1,gmv:46.9,sale:true,link:"https://www.tiktok.com/@bylaucnvt/video/7690535685048012065"},
+      {date:"01/10",creator:"xbner",title:"#ad Ouverture sur le Calendrier de l’avent Brawl s",views:17616,imp:18034,clicks:241,ctr:"1,34 %",orders:1,gmv:46.9,sale:true,link:"https://www.tiktok.com/@xbner/video/7691723993178443041"},
+      {date:"02/10",creator:"priscillatagada",title:"#ad Calendrier de l’avent pop démon Hunter #kpop #",views:73182,imp:74583,clicks:1472,ctr:"1,97 %",orders:1,gmv:42.9,sale:true,link:"https://www.tiktok.com/@priscillatagada/video/7692048763120061729"},
+      {date:"01/10",creator:"happyness3103",title:"#ad #calendrier #kpopdemonhunter #calendrierdelave",views:1940,imp:1996,clicks:35,ctr:"1,75 %",orders:1,gmv:42.9,sale:true,link:"https://www.tiktok.com/@happyness3103/video/7691307807336844577"},
+      {date:"02/10",creator:"mariformm",title:"#ad",views:7374,imp:7375,clicks:123,ctr:"1,67 %",orders:1,gmv:32.12,sale:true,link:"https://www.tiktok.com/@mariformm/video/7691951351571418400"},
+      {date:"31/10/2025",creator:"bonplandenils",title:"#ad #HarryPotter #tiktokshopblackfriday #OffresPou",views:445,imp:291,clicks:24,ctr:"8,25 %",orders:1,gmv:29.95,sale:true,link:"https://www.tiktok.com/@bonplandenils/video/7567434286962445590"},
+      {date:"30/09/2026",creator:"happyness3103",title:"#ad #calendrier #kpopdemonhunter #calendrierdelave",views:37574,imp:39080,clicks:708,ctr:"1,81 %",orders:1,gmv:25.9,sale:true,link:"https://www.tiktok.com/@happyness3103/video/7691309491710610720"},
+      {date:"04/10",creator:"gregraw",title:"#ad #offrespourtoi #dufraispourlautomme #kpop #kpo",views:5811,imp:5898,clicks:100,ctr:"1,70 %",orders:1,gmv:25.9,sale:true,link:"https://www.tiktok.com/@gregraw/video/7692564938421767456"},
+      {date:"02/10",creator:"sandra_btaa",title:"#ad Réponse à @Alexandra Tasca",views:6877,imp:7067,clicks:337,ctr:"4,77 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sandra_btaa/video/7692022592378653984"},
+      {date:"03/10",creator:"bonsplansfr75",title:"#ad #kpopdemonshunters #netflix #calendrierdelaven",views:10996,imp:11242,clicks:265,ctr:"2,36 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bonsplansfr75/video/7692418349770362144"},
+      {date:"01/10",creator:"sachajibril",title:"#ad",views:15828,imp:16231,clicks:230,ctr:"1,42 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sachajibril/video/7691721352700529952"},
+      {date:"03/10",creator:"monsuperpapa",title:"#ad",views:6291,imp:6488,clicks:219,ctr:"3,38 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@monsuperpapa/video/7692465607635242272"},
+      {date:"03/10",creator:"mumlife_enjoy",title:"#ad @TikTok Shop Creator @cinereplicas FR #cinerep",views:3611,imp:3665,clicks:190,ctr:"5,18 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@mumlife_enjoy/video/7692406395769031968"},
+      {date:"02/10",creator:"bonplandeals",title:"#ad",views:9521,imp:9789,clicks:168,ctr:"1,72 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bonplandeals/video/7692034518303116576"},
+      {date:"02/10",creator:"sisii10120",title:"#ad #offrespourtoi #zinedinezidane #zidane #footba",views:3097,imp:3183,clicks:130,ctr:"4,08 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sisii10120/video/7691981157319118112"},
+      {date:"02/10",creator:"cecile_equilibre",title:"#ad Calendrier de l'avent One piece #OffresPourTo",views:3247,imp:3322,clicks:119,ctr:"3,58 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cecile_equilibre/video/7692101553959832864"},
+      {date:"02/10",creator:"joey.pour.les.intimes",title:"#ad @cinereplicas FR @cinereplicas FR @Netflix #de",views:2135,imp:2171,clicks:115,ctr:"5,30 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@joey.pour.les.intimes/video/7692054855610846497"},
+      {date:"03/10",creator:"bearfamily_shop",title:"#ad",views:4103,imp:4144,clicks:115,ctr:"2,78 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bearfamily_shop/video/7692418313665793312"},
+      {date:"01/10",creator:"sisii10120",title:"#ad #offrespourtoi #kpop #demonhunter #kpopdemonhu",views:3371,imp:3424,clicks:107,ctr:"3,12 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sisii10120/video/7691760436252806433"},
+      {date:"02/10",creator:"bonplandeals",title:"#ad",views:7129,imp:7262,clicks:103,ctr:"1,42 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bonplandeals/video/7691975649090735392"},
+      {date:"01/10",creator:"lahottetiktok",title:"#ad #tiktokshop #kpop #demonhunters #calendrierdel",views:2953,imp:3012,clicks:99,ctr:"3,29 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lahottetiktok/video/7691761524687260960"},
+      {date:"03/10",creator:"bonplandeals",title:"#ad",views:4548,imp:4650,clicks:96,ctr:"2,06 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bonplandeals/video/7692018261512260896"},
+      {date:"03/10",creator:"gregraw",title:"#ad #offrespourtoi #dufraispourlautomme #kpop",views:5797,imp:5855,clicks:96,ctr:"1,64 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@gregraw/video/7692374437408099617"},
+      {date:"03/10",creator:"theocourantdetout",title:"#ad",views:4011,imp:4128,clicks:84,ctr:"2,03 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692315603612306720"},
+      {date:"01/10",creator:"sandra_btaa",title:"#ad Réponse à @Mymy",views:4102,imp:4199,clicks:83,ctr:"1,98 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sandra_btaa/video/7691721142192590113"},
+      {date:"03/10",creator:"sandra_btaa",title:"#ad K pop Hunter calendrier de l’avent",views:3442,imp:3573,clicks:74,ctr:"2,07 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sandra_btaa/video/7692422640425766177"},
+      {date:"02/10",creator:"gregraw",title:"#ad #offrespourtoi #dufraispourlautomme #kpop #kpo",views:3513,imp:3519,clicks:66,ctr:"1,88 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@gregraw/video/7692073365808352545"},
+      {date:"04/10",creator:"byromane0",title:"#ad #OffresPourToi #Dufraispourlautomne #Rentréesc",views:1588,imp:1592,clicks:63,ctr:"3,96 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@byromane0/video/7692494949182491937"},
+      {date:"04/10",creator:"ambrinebonsplans",title:"#ad #calendrierdelavent #kpopdemonhunter #tiktokma",views:4621,imp:4710,clicks:63,ctr:"1,34 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ambrinebonsplans/video/7692776035649096993"},
+      {date:"01/10",creator:"sandra_btaa",title:"#ad",views:2741,imp:2830,clicks:59,ctr:"2,08 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sandra_btaa/video/7691669221717200160"},
+      {date:"01/10",creator:"mombearshop",title:"#ad #offrespourtoi #dufraispourlautomne #kpop #cal",views:2893,imp:2871,clicks:53,ctr:"1,85 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@mombearshop/video/7691623448099015968"},
+      {date:"03/10",creator:"theocourantdetout",title:"#ad",views:1954,imp:2081,clicks:53,ctr:"2,55 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692314143600217376"},
+      {date:"03/10",creator:"enz_shopp",title:"#ad",views:2683,imp:2482,clicks:49,ctr:"1,97 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@enz_shopp/video/7692432679916031265"},
+      {date:"04/10",creator:"ludotestetout",title:"#offrepourtoi #calendrierdelavant",views:1312,imp:1323,clicks:44,ctr:"3,33 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ludotestetout/video/7692818743939894550"},
+      {date:"04/10",creator:"cestencoreanais",title:"#ad",views:2061,imp:2135,clicks:43,ctr:"2,01 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cestencoreanais/video/7692787074776190240"},
+      {date:"03/10",creator:"theocourantdetout",title:"#ad",views:3856,imp:3982,clicks:40,ctr:"1,00 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692316241968581921"},
+      {date:"03/10",creator:"bichettetesteuse",title:"#ad #calendrierdelavent #brawlstarstiktok #avantno",views:1119,imp:1066,clicks:40,ctr:"3,75 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bichettetesteuse/video/7692496132508749089"},
+      {date:"04/10",creator:"morgane.gant.toilettes",title:"#ad",views:1189,imp:997,clicks:35,ctr:"3,51 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@morgane.gant.toilettes/video/7692745816309648673"},
+      {date:"01/10",creator:"xbner",title:"#ad Numéros 5 et 6 du calendrier de l’Avent Brawl",views:1266,imp:1287,clicks:33,ctr:"2,56 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7691729167200701728"},
+      {date:"04/10",creator:"crazyshopfr",title:"#ad Calendrier de l'avent Demon Hunter #OffresPou",views:1967,imp:1914,clicks:32,ctr:"1,67 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@crazyshopfr/video/7692554210063273249"},
+      {date:"02/10",creator:"bylaucnvt",title:"#ad",views:1609,imp:1612,clicks:31,ctr:"1,92 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bylaucnvt/video/7691971033795939616"},
+      {date:"03/10",creator:"rebecca31320",title:"#ad Calendrier de l avent équipe de France #pourto",views:759,imp:758,clicks:30,ctr:"3,96 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@rebecca31320/video/7692406185940536609"},
+      {date:"03/10",creator:"theocourantdetout",title:"#ad",views:1297,imp:1369,clicks:29,ctr:"2,12 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692310606178831648"},
+      {date:"02/10",creator:"cestencoreanais",title:"#ad",views:1405,imp:1453,clicks:28,ctr:"1,93 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cestencoreanais/video/7692143418822167841"},
+      {date:"02/10",creator:"theocourantdetout",title:"#ad",views:1681,imp:1691,clicks:25,ctr:"1,48 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692025193845329184"},
+      {date:"03/10",creator:"homeby.june",title:"#ad Ils vont être comme des fous !!! #kpopdemonhun",views:1665,imp:1640,clicks:24,ctr:"1,46 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@homeby.june/video/7692405700093398305"},
+      {date:"02/10",creator:"bonplandeals",title:"#ad",views:1819,imp:1876,clicks:22,ctr:"1,17 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bonplandeals/video/7692017583775616289"},
+      {date:"03/10",creator:"theocourantdetout",title:"#ad",views:1265,imp:1296,clicks:22,ctr:"1,70 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692314850332134688"},
+      {date:"04/10",creator:"homeby.june",title:"#ad Foncez !! #kpop #kpopdemonhunter #calendrierde",views:1132,imp:1127,clicks:22,ctr:"1,95 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@homeby.june/video/7692684853573192993"},
+      {date:"01/10",creator:"xbner",title:"#ad Pack opening Calendrier Brawl Stars , de chez",views:1015,imp:1001,clicks:21,ctr:"2,10 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7691725917210578208"},
+      {date:"02/10",creator:"cecile_equilibre",title:"#ad Demon hunter calendrier de l'avent #OffresPou",views:1711,imp:1743,clicks:21,ctr:"1,20 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cecile_equilibre/video/7692091920784346400"},
+      {date:"03/10",creator:"8.lobitampo",title:"#ad",views:3935,imp:4083,clicks:20,ctr:"0,49 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@8.lobitampo/video/7692336497625664801"},
+      {date:"01/10",creator:"ingrid.mgt",title:"#ad #calendrierdelavent #kpopdemonhunter",views:1998,imp:2045,clicks:19,ctr:"0,93 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ingrid.mgt/video/7691610374738660641"},
+      {date:"02/10",creator:"lahottetiktok",title:"#ad #tiktokshop #onepiece #chopper #calendrierdela",views:1046,imp:1067,clicks:19,ctr:"1,78 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lahottetiktok/video/7691953137791339808"},
+      {date:"02/10",creator:"elys.tentation.music",title:"#ad #tiktokshop #calendrierdelavant #bestseller #b",views:1250,imp:1270,clicks:19,ctr:"1,50 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@elys.tentation.music/video/7691996121094245665"},
+      {date:"04/10",creator:"bonsplansfr75",title:"#ad #calendrierdelavent #kpopdemonhunter #netflix",views:2373,imp:2354,clicks:19,ctr:"0,81 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bonsplansfr75/video/7692435685537615137"},
+      {date:"04/10",creator:"sabrinahck",title:"#ad #kpopdemonhunter #calendrierdelavent #dufraisp",views:1519,imp:1520,clicks:18,ctr:"1,18 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sabrinahck/video/7692847701129432353"},
+      {date:"01/10",creator:"xbner",title:"#ad Calendrier de l’Avent Harry Potter de chez : @",views:984,imp:887,clicks:17,ctr:"1,92 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7691728836840492321"},
+      {date:"03/10",creator:"mondeenbonsplans",title:"#ad #offrespourtoi #dufraispourlautomne",views:1279,imp:1308,clicks:17,ctr:"1,30 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@mondeenbonsplans/video/7692168302998670625"},
+      {date:"04/10",creator:"meilhina",title:"#ad Incroyable ce calendrier de l’avent #kpopdemon",views:513,imp:487,clicks:17,ctr:"3,49 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@meilhina/video/7692887595784604961"},
+      {date:"02/10",creator:"xbner",title:"#ad Mega box 2026 , de chez : @cinereplicas FR ,",views:1110,imp:1093,clicks:16,ctr:"1,46 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692025161905687840"},
+      {date:"03/10",creator:"prescillialeguellec",title:"#ad Idéal pour les fête qui approche #jeux #harryp",views:1221,imp:1189,clicks:16,ctr:"1,35 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@prescillialeguellec/video/7692391469486771488"},
+      {date:"03/10",creator:"gregraw",title:"#ad #offrespourtoi #dufraispourlautomme #kpop #kpo",views:2264,imp:2299,clicks:15,ctr:"0,65 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@gregraw/video/7692203578936626464"},
+      {date:"03/10",creator:"ely_atk",title:"#ad Enfin dispo Prenez de l’avance pour l’avoir au",views:1162,imp:1187,clicks:15,ctr:"1,26 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ely_atk/video/7692525526707113249"},
+      {date:"04/10",creator:"cestencoreanais",title:"#ad",views:832,imp:853,clicks:15,ctr:"1,76 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cestencoreanais/video/7692565691567738144"},
+      {date:"04/10",creator:"xbner",title:"#ad",views:730,imp:711,clicks:15,ctr:"2,11 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692780375118023969"},
+      {date:"01/10",creator:"universdenono",title:"#ad #calendrierdelavent #harrypoter #offrespourtoi",views:615,imp:585,clicks:14,ctr:"2,39 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@universdenono/video/7691757380429696288"},
+      {date:"04/10",creator:"lahottetiktok",title:"#ad #tiktokshop #kpop #demonhunters #calendrierdel",views:595,imp:596,clicks:14,ctr:"2,35 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lahottetiktok/video/7692695256952769825"},
+      {date:"02/10",creator:"8.lobitampo",title:"#ad",views:2973,imp:3068,clicks:13,ctr:"0,42 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@8.lobitampo/video/7692008666295209249"},
+      {date:"03/10",creator:"dorotheegeenen",title:"#ad #kpop #calendrierdelavent #dufraispourlautomme",views:302,imp:283,clicks:13,ctr:"4,59 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@dorotheegeenen/video/7692344124237942048"},
+      {date:"03/10",creator:"lahottetiktok",title:"#ad #equipedefrance #maillotdesbleus #fff #footbal",views:783,imp:804,clicks:13,ctr:"1,62 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lahottetiktok/video/7692472955778895136"},
+      {date:"02/10",creator:"prescillialeguellec",title:"#ad Calendrier de l’Avent, #jeux#Harrypotter",views:499,imp:486,clicks:12,ctr:"2,47 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@prescillialeguellec/video/7691935630523239713"},
+      {date:"03/10",creator:"mondeenbonsplans",title:"#ad #dufraispourlautomne #offrespourtoi",views:596,imp:581,clicks:12,ctr:"2,07 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@mondeenbonsplans/video/7692167174177180961"},
+      {date:"03/10",creator:"theocourantdetout",title:"#ad",views:1030,imp:1073,clicks:12,ctr:"1,12 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692309376400510240"},
+      {date:"03/10",creator:"likzo72",title:"#ad #tiktokshop #offrespourtoi #dufraispourlautomn",views:378,imp:366,clicks:12,ctr:"3,28 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@likzo72/video/7692475328756895009"},
+      {date:"03/10",creator:"niataki77",title:"#ad",views:680,imp:115,clicks:12,ctr:"10,43 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@niataki77/video/7692505270584347937"},
+      {date:"04/10",creator:"8.lobitampo",title:"#ad",views:1430,imp:1486,clicks:12,ctr:"0,81 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@8.lobitampo/video/7692732504159046944"},
+      {date:"02/10",creator:"bylaucnvt",title:"#ad",views:837,imp:797,clicks:11,ctr:"1,38 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bylaucnvt/video/7692022207035346209"},
+      {date:"02/10",creator:"ambrinebonsplans",title:"#ad #calendrierdelavent #harrypotter #tiktokmademe",views:705,imp:690,clicks:11,ctr:"1,59 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ambrinebonsplans/video/7692050666155560225"},
+      {date:"02/10",creator:"prescillialeguellec",title:"#ad Le calendrier super sympa #Harrypotter",views:504,imp:473,clicks:10,ctr:"2,11 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@prescillialeguellec/video/7691990095515241760"},
+      {date:"04/10",creator:"adel.tiktokshop",title:"#ad Un calendrier de l’Avent pour les fans de KPo",views:604,imp:555,clicks:10,ctr:"1,80 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@adel.tiktokshop/video/7692890377249901856"},
+      {date:"01/10",creator:"sisii10120",title:"#ad #offrespourtoi #equipedefrance #football #foot",views:783,imp:768,clicks:9,ctr:"1,17 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sisii10120/video/7691745009191636257"},
+      {date:"02/10",creator:"theocourantdetout",title:"#ad",views:707,imp:713,clicks:9,ctr:"1,26 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692025851587644705"},
+      {date:"02/10",creator:"cecile_equilibre",title:"#ad Calendrier de l'avent Harry Potter #OffresPour",views:640,imp:628,clicks:9,ctr:"1,43 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cecile_equilibre/video/7692102194178444577"},
+      {date:"03/10",creator:"niataki77",title:"#ad #calendrierdelavent #harrypottertiktok #tiktok",views:672,imp:618,clicks:9,ctr:"1,46 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@niataki77/video/7692370748081556768"},
+      {date:"03/10",creator:"homeby.june",title:"#ad Pour les mini fans de kpop Demon Hunters #kpop",views:862,imp:817,clicks:9,ctr:"1,10 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@homeby.june/video/7692404344221650209"},
+      {date:"04/10",creator:"sisii10120",title:"#ad #offrespourtoi #football #equipedefrance #fran",views:518,imp:526,clicks:9,ctr:"1,71 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sisii10120/video/7692838619534363937"},
+      {date:"02/10",creator:"theocourantdetout",title:"#ad",views:647,imp:656,clicks:8,ctr:"1,22 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692026591794171168"},
+      {date:"03/10",creator:"cestencoreanais",title:"#ad",views:787,imp:811,clicks:8,ctr:"0,99 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cestencoreanais/video/7692359660774411552"},
+      {date:"04/10",creator:"xbner",title:"#ad 19-20 ouverture du Calendrier , de chez : @ci",views:339,imp:316,clicks:8,ctr:"2,53 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692859158806269216"},
+      {date:"04/10",creator:"maxfibrowarrior",title:"#ad On en profite ça part vite !!!",views:289,imp:216,clicks:8,ctr:"3,70 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@maxfibrowarrior/video/7692906180594748705"},
+      {date:"04/10",creator:"bonplandeals",title:"#ad",views:657,imp:673,clicks:7,ctr:"1,04 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@bonplandeals/video/7692019009021119777"},
+      {date:"04/10",creator:"xbner",title:"#ad",views:662,imp:666,clicks:7,ctr:"1,05 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692804245862501665"},
+      {date:"04/10",creator:"xbner",title:"#ad 17-18 ouverture du Calendrier de l’Avent , de",views:451,imp:434,clicks:7,ctr:"1,61 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692823690685271328"},
+      {date:"04/10",creator:"ametesteshop",title:"#ad STOP Tu connais un fan d’Harry Potter ? 24 s",views:367,imp:332,clicks:7,ctr:"2,11 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ametesteshop/video/7692867030042627350"},
+      {date:"01/10",creator:"xbner",title:"#ad Harry Potter Calendrier de l’Avent , de chez",views:574,imp:523,clicks:6,ctr:"1,15 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7691728019542543649"},
+      {date:"03/10",creator:"xbner",title:"#ad Ouverture du Calendrier de l’Avent Brawl Stars",views:637,imp:631,clicks:6,ctr:"0,95 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692461555304221984"},
+      {date:"03/10",creator:"marina.shoopmk",title:"#ad #kpops",views:732,imp:754,clicks:6,ctr:"0,80 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@marina.shoopmk/video/7692514982826757408"},
+      {date:"04/10",creator:"angel74310",title:"#ad Le calendrier de l’Avent KPop Demon Hunters 2",views:391,imp:380,clicks:6,ctr:"1,58 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@angel74310/video/7692542918921325856"},
+      {date:"04/10",creator:"shop_maniia",title:"#ad #tiktokshop #bestseller #calendrierdelavant #l",views:453,imp:438,clicks:6,ctr:"1,37 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@shop_maniia/video/7692780903990381856"},
+      {date:"04/10",creator:"xbner",title:"#ad Calendrier Brawl Stars , de chez : @cinerepli",views:385,imp:356,clicks:6,ctr:"1,69 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692804881542860065"},
+      {date:"03/10",creator:"xbner",title:"#ad Ouverture du Calendrier Brawl Stars de chez :",views:476,imp:448,clicks:5,ctr:"1,12 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@xbner/video/7692512323151351072"},
+      {date:"04/10",creator:"yviglow60",title:"#ad Livraison rapide!!! PRENEZ AVANT RUPTURE! Cale",views:462,imp:459,clicks:5,ctr:"1,09 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@yviglow60/video/7692749997145689377"},
+      {date:"04/10",creator:"lesbonsplansdenath",title:"#ad",views:652,imp:660,clicks:5,ctr:"0,76 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lesbonsplansdenath/video/7692767178185067809"},
+      {date:"03/10",creator:"yviglow60",title:"#ad Le cadeau qui va faire son effet! Calendrier d",views:461,imp:461,clicks:4,ctr:"0,87 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@yviglow60/video/7692533272236068128"},
+      {date:"04/10",creator:"clemshop",title:"#ad #OffresPourToi #dufraispourlautomne #harrypott",views:580,imp:543,clicks:4,ctr:"0,74 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@clemshop/video/7692722435187150112"},
+      {date:"04/10",creator:"meilhina",title:"#ad Toi aussi tu aimes Kpop Demon Hunter ? #kpopde",views:454,imp:411,clicks:4,ctr:"0,97 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@meilhina/video/7692761051594640672"},
+      {date:"04/10",creator:"sandra_btaa",title:"#ad Réponse à @bls27",views:429,imp:414,clicks:4,ctr:"0,97 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@sandra_btaa/video/7692835318826863904"},
+      {date:"04/10",creator:"anya602801",title:"#ad #OffresPourToi #dufraispourlautomne",views:282,imp:284,clicks:4,ctr:"1,41 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@anya602801/video/7692912033783631137"},
+      {date:"01/10",creator:"lahottetiktok",title:"#ad #tiktokshop #kpop #demonhunters #calendrierdel",views:684,imp:687,clicks:3,ctr:"0,44 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lahottetiktok/video/7691764639893441825"},
+      {date:"03/10",creator:"vincent_shop_",title:"#ad",views:872,imp:870,clicks:3,ctr:"0,34 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@vincent_shop_/video/7692464541740911904"},
+      {date:"04/10",creator:"cecile_equilibre",title:"#ad #OffresPourToi #Dufraispourlautomne",views:368,imp:370,clicks:3,ctr:"0,81 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@cecile_equilibre/video/7692901442796965153"},
+      {date:"03/10",creator:"ambrinebonsplans",title:"#ad #calendrierdelavent #harrypotter #tiktokmademe",views:463,imp:435,clicks:2,ctr:"0,46 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ambrinebonsplans/video/7692400412736933152"},
+      {date:"03/10",creator:"jacintatiktokshop",title:"#ad",views:468,imp:442,clicks:2,ctr:"0,45 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@jacintatiktokshop/video/7692464569825987872"},
+      {date:"03/10",creator:"universdenono",title:"#ad #calendrierdelavant #harrypotter #offrespourto",views:394,imp:334,clicks:2,ctr:"0,60 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@universdenono/video/7692486869405158688"},
+      {date:"04/10",creator:"vincent_shop_",title:"#ad",views:766,imp:775,clicks:2,ctr:"0,26 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@vincent_shop_/video/7692727045486333216"},
+      {date:"04/10",creator:"elys.tentation.music",title:"#ad #bestseller #kpop #kpopdemonhunters #noel #kpo",views:245,imp:211,clicks:2,ctr:"0,95 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@elys.tentation.music/video/7692898538820357409"},
+      {date:"01/10",creator:"niataki77",title:"#ad",views:316,imp:8,clicks:1,ctr:"12,50 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@niataki77/video/7691645989609884961"},
+      {date:"01/10",creator:"ingrid.mgt",title:"#ad #mercredi #calendrierdelavent",views:342,imp:328,clicks:1,ctr:"0,30 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@ingrid.mgt/video/7691753719188196641"},
+      {date:"04/10",creator:"fannyglam71",title:"#ad",views:344,imp:305,clicks:1,ctr:"0,33 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@fannyglam71/video/7692761378624458017"},
+      {date:"04/10",creator:"lesloisirsdeka",title:"#ad",views:398,imp:354,clicks:1,ctr:"0,28 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lesloisirsdeka/video/7692823760981806369"},
+      {date:"04/10",creator:"lahottetiktok",title:"#ad #tiktokshop #kpop #demonhunters #calendrierdel",views:321,imp:320,clicks:1,ctr:"0,31 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@lahottetiktok/video/7692887048449002784"},
+      {date:"04/10",creator:"theocourantdetout",title:"",views:1,imp:1,clicks:0,ctr:"0,00 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@theocourantdetout/video/7692315446057471264"},
+      {date:"04/10",creator:"rebecca31320",title:"",views:1,imp:1,clicks:0,ctr:"0,00 %",orders:0,gmv:0,sale:false,link:"https://www.tiktok.com/@rebecca31320/video/7692405255719456033"}
+    ],
+    samples: { period:"Octobre 2026 · mois en cours (données au 3 oct.)",
+      metrics:[ {label:"Échantillons expédiés",value:"44",delta:15.79}, {label:"Content GMV",value:"268,35 €",delta:null}, {label:"COGS est.",value:"515,64 €",delta:24}, {label:"Frais de port est.",value:"0,00 €",delta:null}, {label:"Contenus",value:"12",delta:200}, {label:"ROI 45 jours",value:"0,00",delta:null} ],
+      breakdown:[ {name:"Échantillon gratuit",value:35,color:"#14b8a6"},{name:"Approuvé manuel (collab. ciblée)",value:9,color:"#3b5bdb"} ],
+      funnelNote:"Funnel « Échantillon gratuit » (onglet Demandes de produits d'essai) : aucune donnée de conversion remontée par TikTok sur cette période.",
+      funnel:[] },
+    tap: [],
+    tapPerf: null,
+    actions: []
+  }
+
+};
+
+let charts = [];
+function destroyCharts(){ charts.forEach(c => { try{c.destroy()}catch(e){} }); charts = []; }
+function badge(d){ if(d===null||d===undefined) return ""; if(d===0) return `<span class="delta flat">0 %</span>`; const dir=d<0?"down":"up", a=d<0?"▼":"▲"; return `<span class="delta ${dir}">${a} ${Math.abs(d)} %</span>`; }
+function cards(id, metrics){ document.getElementById(id).innerHTML = metrics.map(m=>`<div class="card"><div class="label">${m.label}${m.tip?` <span class="tip" title="${m.tip.replace(/"/g,'&quot;')}">&#9432;</span>`:''}</div><div class="value">${m.value}</div>${badge(m.delta)}</div>`).join(""); }
+function donut(canvasId, items, fmt){ const c=new Chart(document.getElementById(canvasId),{type:"doughnut",data:{labels:items.map(b=>b.name),datasets:[{data:items.map(b=>b.value),backgroundColor:items.map(b=>b.color),borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,maintainAspectRatio:false,cutout:"62%",plugins:{legend:{position:"bottom",labels:{font:{size:12},padding:12,usePointStyle:true}},tooltip:{callbacks:{label:x=>` ${x.label} : ${fmt(x.raw)}`}}}}}); charts.push(c); }
+function eur(v){ return v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})+" €"; }
+
+function render(key){
+  destroyCharts();
+  const M = MONTHS[key];
+  document.getElementById("updated").textContent = M.updated;
+  const order=[["cumul","Cumul 2026"],["2026-09","Septembre 2026"],["2026-10","Octobre 2026"]];
+  document.getElementById("pills").innerHTML = order.map(([k,lbl])=> MONTHS[k]
+    ? `<button class="month-pill ${k===key?'active':''}" data-k="${k}">${MONTHS[k].label}</button>`
+    : `<button class="month-pill soon">${lbl} <span class="tag">à venir</span></button>`).join("");
+  document.querySelectorAll(".month-pill[data-k]").forEach(b=>b.onclick=()=>render(b.dataset.k));
+
+  // Vendeur
+  const b=M.boutique;
+  document.getElementById("s_period").textContent=b.period;
+  document.getElementById("s_compare").textContent=b.compare;
+  document.getElementById("s_note").innerHTML = b.pending?`<div class="note">${b.pending}</div>`:"";
+  cards("s_cards", b.metrics);
+  document.getElementById("s_breakdown").innerHTML = b.breakdown.map(x=>`<div class="bd-row"><div class="bd-left"><span class="dot" style="background:${x.color}"></span>${x.name}</div><div><span class="bd-val">${eur(x.value)}</span><span class="bd-pct">${x.pct} %</span></div></div>`).join("");
+  document.getElementById("s_rank").textContent=b.rank;
+  donut("donut", b.breakdown, eur);
+
+  // Produits vendus (hors échantillons)
+  const pr=M.products;
+  const pSecIds=["p_period","p_cards","p_breakdown","p_table","p_src","p_samples_note"];
+  const pDonutBox=document.getElementById("pdonut").closest(".grid2");
+  const pLabel=document.getElementById("p_period").closest(".period-bar").previousElementSibling;
+  if(pr){
+    [pLabel,pDonutBox].forEach(e=>{if(e)e.style.display="";});
+    document.getElementById("p_period").closest(".period-bar").style.display="";
+    document.getElementById("p_period").textContent=pr.period;
+    const src=document.getElementById("p_src");
+    src.style.display=pr.source?"":"none"; src.textContent=pr.source||"";
+    cards("p_cards", pr.metrics);
+    document.getElementById("p_breakdown").innerHTML = pr.byProduct.map(x=>`<div class="bd-row"><div class="bd-left"><span class="dot" style="background:${x.color}"></span>${x.name} <span style="color:#6b7280;font-weight:400">· ${x.qty} art.</span></div><div><span class="bd-val">${eur(x.value)}</span><span class="bd-pct">${x.pct} %</span></div></div>`).join("");
+    document.getElementById("p_samples_note").innerHTML = pr.samplesNote ? `${pr.samplesNote}${pr.samples?" — "+pr.samples.map(x=>`<b>${x.product}</b> : ${x.qty}`).join(" · "):""}` : "";
+    donut("pdonut", pr.byProduct, eur);
+    document.getElementById("p_table").innerHTML = `<div class="panel" style="margin-top:14px;"><h2>Détail par déclinaison (SKU)</h2><div class="hint">Classé par chiffre d'affaires sur la période.</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Produit</th><th>Déclinaison</th><th>Articles vendus</th><th>Chiffre d'affaires</th><th>Part du CA</th></tr></thead><tbody>${pr.rows.map(r=>`<tr><td><b>${r.product}</b></td><td>${r.sku}</td><td>${r.qty}</td><td><b>${r.rev}</b></td><td>${r.pct}</td></tr>`).join("")}</tbody></table></div></div>`;
+  } else {
+    [pLabel,pDonutBox].forEach(e=>{if(e)e.style.display="none";});
+    document.getElementById("p_period").closest(".period-bar").style.display="none";
+    document.getElementById("p_src").style.display="none";
+    document.getElementById("p_cards").innerHTML="";
+    document.getElementById("p_table").innerHTML="";
+  }
+
+  // Ads
+  const a=M.ads;
+  document.getElementById("m_period").textContent=a.period;
+  document.getElementById("m_cmp").textContent=a.cmp||"";
+  document.getElementById("m_note").innerHTML = a.note?`<div class="note">${a.note}</div>`:"";
+  cards("m_cards", a.metrics);
+  const cp=document.getElementById("camp_panel");
+  const campCardsHtml=items=>items.map(it=>`<div class="card"><div class="label">${it.label}</div><div class="value">${it.value}</div></div>`).join("");
+  if(a.campaigns && a.campaigns.length){
+    cp.style.display="";
+    cp.innerHTML=a.campaigns.map(c=>`<div style="margin-bottom:16px;"><h2>${c.name}</h2><div class="hint">${c.status}</div><div class="cards camp">${campCardsHtml(c.items)}</div></div>`).join("");
+  } else if(a.campaign){
+    cp.style.display="";
+    cp.innerHTML=`<h2>${a.campaign.name}</h2><div class="hint">${a.campaign.status}</div><div class="cards camp">${campCardsHtml(a.campaign.items)}</div>`;
+  } else { cp.style.display="none"; }
+
+  // Affiliés perf
+  const af=M.affiliate;
+  document.getElementById("af_period").textContent=af.period;
+  document.getElementById("af_compare").textContent=af.compare;
+  cards("af_cards", af.metrics);
+  document.getElementById("cr_note").innerHTML = af.creatorsNote?`<div class="note">${af.creatorsNote}</div>`:"";
+  document.getElementById("cr_hint").textContent = af.creators.length?"Créateurs par GMV attribué sur la période.":"";
+  document.getElementById("cr_rows").innerHTML = af.creators.map(c=>`<tr><td><div class="cr"><div class="cr-av">${c.name.charAt(0).toUpperCase()}</div><div><div class="cr-name">@${c.name}</div><div class="cr-sub">${c.sub||''}</div></div></div></td><td><b>${c.gmv}</b></td><td>${c.ref}</td><td>${c.com}</td><td>${c.ord}</td><td>${c.items}</td><td>${c.iref}</td><td>${c.vid}</td></tr>`).join("");
+
+  // Vidéos/jour
+  const vd=M.videosDaily;
+  document.getElementById("vd_period").textContent=vd.period;
+  cards("vd_cards", [ {label:"Vidéos publiées",value:String(vd.totalVideos),delta:null},{label:"GMV vidéos publiées",value:vd.totalGmv,delta:null},{label:"Commandes (vidéos)",value:String(vd.totalOrders),delta:null} ]);
+  const vc=new Chart(document.getElementById("vdChart"),{data:{labels:vd.days,datasets:[{type:"bar",label:"Vidéos publiées",data:vd.videos,backgroundColor:"#14b8a6",yAxisID:"y",borderRadius:4},{type:"line",label:"GMV (€)",data:vd.gmv,borderColor:"#f5b301",backgroundColor:"#f5b301",yAxisID:"y1",tension:.3,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{usePointStyle:true,font:{size:12},padding:14}}},scales:{x:{ticks:{font:{size:10},maxRotation:90,minRotation:90},grid:{display:false}},y:{position:"left",beginAtZero:true,title:{display:true,text:"Vidéos"}},y1:{position:"right",beginAtZero:true,title:{display:true,text:"GMV (€)"},grid:{drawOnChartArea:false}}}}}); charts.push(vc);
+
+  // Tunnel de conversion vidéo
+  const vf=M.videoFunnel;
+  if(vf){
+    const mx=Math.max(...vf.steps.map(x=>x.num),1);
+    const bars=vf.steps.map((x,ix)=>`<div class="funnel-row"><div style="flex:1">${x.label}${x.rate?` <span style="color:#14b8a6;font-weight:700;font-size:12px">▸ ${x.rate}</span>`:''}${x.sub?`<div style="font-size:11px;color:#9ca3af">${x.sub}</div>`:''}</div><div class="funnel-bar" style="width:${Math.max(6,(Math.log10(x.num+1)/Math.log10(mx+1))*60)}%"></div><div style="width:90px;text-align:right;font-weight:700">${x.value}</div></div>`).join("");
+    const vsteps=vf.videoSteps.map(x=>`<div class="bd-row"><div class="bd-left">${x.label}</div><div><span class="bd-val">${x.value}</span>${x.rate?`<span class="bd-pct">${x.rate}</span>`:''}</div></div>`).join("");
+    document.getElementById("vf_wrap").innerHTML = `<div class="grid2" style="margin-top:14px;"><div class="panel"><h2>Tunnel de conversion des vidéos</h2><div class="hint">${vf.note||''}</div><div style="margin-top:12px">${bars}</div></div><div class="panel"><h2>Combien de vidéos convertissent ?</h2><div class="hint">${vf.period}</div><div style="margin-top:8px">${vsteps}</div>${vf.insight?`<div class="note" style="margin-top:12px">${vf.insight}</div>`:''}</div></div>`;
+  } else { document.getElementById("vf_wrap").innerHTML=""; }
+
+  // Toutes les vidéos (détail)
+  const vl=M.videosList||[];
+  document.getElementById("tv_period").textContent=M.label;
+  document.getElementById("tv_count").textContent=vl.length;
+  const ns=vl.filter(v=>v.sale).length;
+  document.getElementById("tv_sales").innerHTML=`<b style="color:#16a34a">${ns}</b> avec vente`;
+  document.getElementById("tv_note").innerHTML = M.videosListNote?`<div class="note" style="margin:8px 0 0">${M.videosListNote}</div>`:"";
+  function drawVideos(f){
+    const rows = f==='sale'? vl.filter(v=>v.sale): vl;
+    document.getElementById("tv_rows").innerHTML = rows.length? rows.map(v=>`<tr class="${v.sale?'has-sale':''}"><td>${v.date}</td><td><span class="vt-cr">@${v.creator}</span></td><td><span class="vt-title">${(v.title||'—').replace(/</g,'&lt;')}</span></td><td>${v.views!=null?v.views.toLocaleString("fr-FR"):'—'}</td><td>${v.imp!=null?v.imp.toLocaleString("fr-FR"):'—'}</td><td>${v.clicks!=null?`<b>${v.clicks.toLocaleString("fr-FR")}</b>`:'—'}</td><td>${v.ctr||'—'}</td><td><b>${v.gmv.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})} €</b></td><td>${v.orders}</td><td class="${v.sale?'sale-yes':'sale-no'}">${v.sale?'✓ Oui':'—'}</td><td>${v.link?`<a href="${v.link}" target="_blank" rel="noopener" style="color:#001f5b;font-weight:700;text-decoration:none">Voir ▶</a>`:'—'}</td></tr>`).join("") : `<tr><td colspan="11" style="text-align:center;color:#9ca3af;padding:20px">Aucune vidéo</td></tr>`;
+  }
+  drawVideos('all');
+  document.getElementById("tv_all").onclick=function(){this.classList.add('active');document.getElementById("tv_sale").classList.remove('active');drawVideos('all');};
+  document.getElementById("tv_sale").onclick=function(){this.classList.add('active');document.getElementById("tv_all").classList.remove('active');drawVideos('sale');};
+  { const _vl=M.videosList||[]; const _bar=document.getElementById("tv_bar"), _pan=document.getElementById("tv_panel"); if(!_vl.length){ _bar.style.display="none"; _pan.style.display="none"; if(!document.getElementById("tv_note").innerHTML){ document.getElementById("tv_note").innerHTML=`<div class="note" style="margin:8px 0 0">Détail des vidéos disponible dans chaque onglet mensuel.</div>`; } } else { _bar.style.display=""; _pan.style.display=""; } }
+
+  // Échantillons
+  const sa=M.samples;
+  document.getElementById("sa_period").textContent=sa.period;
+  cards("sa_cards", sa.metrics);
+  donut("sa_donut", sa.breakdown, v=>v+" éch.");
+  if(sa.funnel && sa.funnel.length){
+    const fMax=Math.max(...sa.funnel.map(f=>f.value),1);
+    document.getElementById("funnel").innerHTML = sa.funnel.map(f=>`<div class="funnel-row"><div style="flex:1">${f.label}${f.rate?` <span style="color:#14b8a6;font-weight:700;font-size:12px">▸ ${f.rate}</span>`:''}</div><div class="funnel-bar" style="width:${Math.max(6,(f.value/fMax)*60)}%"></div><div style="width:48px;text-align:right;font-weight:700">${f.value}</div></div>`).join("");
+  } else {
+    document.getElementById("funnel").innerHTML = `<div class="note" style="margin:0">${sa.funnelNote||"Funnel indisponible : la fenêtre glissante de 45 jours ne couvre plus ce mois. Le graphique de répartition ci-contre reste correct."}</div>`;
+  }
+  // TAP — agences partenaires
+  const tap=M.tap||[];
+  document.getElementById("tap_period").textContent=M.label;
+  document.getElementById("tap_wrap").innerHTML = tap.length ? `<div class="panel" style="margin-top:8px;"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Agence partenaire</th><th>Statut</th><th>Commission normale</th><th>Commission Shop Ads (avec pub)</th><th>Produit</th><th>Début</th><th>Notes</th></tr></thead><tbody>${tap.map(t=>`<tr><td><b>${t.name}</b></td><td>${t.status}</td><td><b>${t.commNorm}</b></td><td><b>${t.commAds}</b></td><td>${t.product||'Roselash Classique'}</td><td>${t.start}</td><td>${t.notes||''}</td></tr>`).join("")}</tbody></table></div></div>` : `<div class="note">Aucun programme TAP ce mois-ci.</div>`;
+
+  // TAP Performance par agence
+  const tp=M.tapPerf;
+  if(tp){
+    document.getElementById("tperf_period").textContent=tp.period;
+    cards("tperf_cards", tp.metrics);
+    document.getElementById("tperf_wrap").innerHTML = `<div class="panel" style="margin-top:8px;"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Agence</th><th>GMV</th><th>Commandes</th><th>Commission est.</th><th>Vidéos</th><th>LIVES</th><th>Vues vidéos</th><th>Créateurs éch.</th><th>Créateurs contenu</th><th>Créateurs ventes</th></tr></thead><tbody>${tp.agencies.map(a=>`<tr><td><b>${a.name}</b></td><td><b>${a.gmv}</b></td><td>${a.orders}</td><td>${a.com}</td><td>${a.videos}</td><td>${a.lives}</td><td>${a.vv}</td><td>${a.crSamples}</td><td>${a.crContent}</td><td>${a.crSales}</td></tr>`).join("")}</tbody></table></div></div>`;
+    document.getElementById("tperf_videos").innerHTML = (tp.videosList&&tp.videosList.length) ? `<div class="panel" style="margin-top:14px;"><h2>Vidéos TAP · ${tp.videosList.length} vidéos</h2><div class="hint">Chaque vidéo des créateurs des agences TAP, avec son agence, son GMV et ses vues.</div><div class="tbl-wrap" style="max-height:520px;overflow-y:auto;"><table class="tbl vtbl"><thead><tr><th>Date</th><th>Créateur</th><th>Agence</th><th>Titre</th><th>GMV</th><th>Vues</th><th>Lien</th></tr></thead><tbody>${tp.videosList.map(v=>`<tr class="${v.sale?'has-sale':''}"><td>${v.date}</td><td><span class="vt-cr">@${v.creator}</span></td><td>${v.agency}</td><td><span class="vt-title">${(v.title||'—').replace(/</g,'&lt;')}</span></td><td><b>${v.gmv.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})} €</b></td><td>${v.views.toLocaleString("fr-FR")}</td><td>${v.link?`<a href="${v.link}" target="_blank" rel="noopener" style="color:#001f5b;font-weight:700;text-decoration:none">Voir ▶</a>`:'—'}</td></tr>`).join("")}</tbody></table></div></div>` : "";
+  } else {
+    document.getElementById("tperf_period").textContent=M.label;
+    document.getElementById("tperf_cards").innerHTML="";
+    document.getElementById("tperf_wrap").innerHTML=`<div class="note">Aucune donnée de performance TAP ce mois-ci.</div>`;
+    document.getElementById("tperf_videos").innerHTML="";
+  }
+
+  // Actions / Campagnes
+  const acts=M.actions||[];
+  document.getElementById("ac_period").textContent=M.label;
+  document.getElementById("ac_wrap").innerHTML = acts.length ? acts.map(a=>`<div class="panel" style="margin-top:8px;"><h2>${a.title}</h2><div style="font-size:14px;color:#374151;margin-top:8px;line-height:1.6">${a.text}</div></div>`).join("") : `<div class="note">Aucune action ou campagne spécifique enregistrée ce mois-ci.</div>`;
+}
+
+
+/* ===== Cumul 2026 — agrégation dynamique de tous les mois ===== */
+(function(){
+  const keys = ["2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10"].filter(k=>MONTHS[k]);
+  if(!keys.length) return;
+  const pf = s => { if(s==null) return 0; if(typeof s==='number') return s; let t=(''+s).replace(/\s/g,'').replace(/[€%]/g,''); t=t.replace(/\./g,'').replace(',', '.'); const n=parseFloat(t); return isNaN(n)?0:n; };
+  const mget = (arr,label)=>{ const it=(arr||[]).find(x=>x.label===label); return it?pf(it.value):0; };
+  const NB=" ";
+  const fmtE = v => v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/\s/g,NB)+" €";
+  const fmtN = v => Math.round(v).toLocaleString("fr-FR").replace(/\s/g,NB);
+
+  let bGMV=0,bCmd=0,bCli=0,bArt=0, bdLive=0,bdVid=0,bdFic=0;
+  let adCost=0,adSku=0,adRev=0;
+  let afGMV=0,afArt=0,afRemb=0,afCom=0,afVid=0,afLive=0;
+  let saExp=0,saGMV=0,saCogs=0,saPort=0,saCont=0, sbManu=0,sbGrat=0,sbPart=0;
+  let vTot=0,vGmv=0,vOrd=0;
+  const mLabels=[], mVideos=[], mGmv=[];
+  let tapGMV=0,tapCmd=0,tapCom=0,tapVid=0,tapLive=0,tapCrV=0;
+  const tapAg={}; let lastTap=[];
+
+  for(const k of keys){
+    const M=MONTHS[k];
+    const b=M.boutique;
+    bGMV+=mget(b.metrics,"GMV"); bCmd+=mget(b.metrics,"Commandes"); bCli+=mget(b.metrics,"Clients"); bArt+=mget(b.metrics,"Articles vendus");
+    (b.breakdown||[]).forEach(x=>{ if(/live/i.test(x.name))bdLive+=x.value; else if(/vid/i.test(x.name))bdVid+=x.value; else bdFic+=x.value; });
+    const a=M.ads;
+    adCost+=mget(a.metrics,"Coût"); adSku+=mget(a.metrics,"Commandes SKU"); adRev+=mget(a.metrics,"Revenu brut");
+    const af=M.affiliate;
+    afGMV+=mget(af.metrics,"GMV attribué (créateurs)"); afArt+=mget(af.metrics,"Articles vendus"); afRemb+=mget(af.metrics,"Remboursements"); afCom+=mget(af.metrics,"Commission est."); afVid+=mget(af.metrics,"Vidéos"); afLive+=mget(af.metrics,"Lives");
+    const sa=M.samples;
+    saExp+=mget(sa.metrics,"Échantillons expédiés"); saGMV+=mget(sa.metrics,"Content GMV"); saCogs+=mget(sa.metrics,"COGS est."); saPort+=mget(sa.metrics,"Frais de port est."); saCont+=mget(sa.metrics,"Contenus");
+    (sa.breakdown||[]).forEach(x=>{ if(/manuel|approuv/i.test(x.name))sbManu+=x.value; else if(/gratuit/i.test(x.name))sbGrat+=x.value; else if(/parten/i.test(x.name))sbPart+=x.value; });
+    const vd=M.videosDaily;
+    vTot+=pf(vd.totalVideos); vGmv+=pf(vd.totalGmv); vOrd+=pf(vd.totalOrders);
+    mLabels.push(M.label.replace(' 2026','')); mVideos.push(pf(vd.totalVideos)); mGmv.push(pf(vd.totalGmv));
+    if(M.tap && M.tap.length) lastTap=M.tap;
+    const tp=M.tapPerf;
+    if(tp){
+      tapGMV+=mget(tp.metrics,"GMV TAP"); tapCmd+=mget(tp.metrics,"Commandes"); tapCom+=mget(tp.metrics,"Commission est."); tapVid+=mget(tp.metrics,"Vidéos"); tapLive+=mget(tp.metrics,"LIVES"); tapCrV+=mget(tp.metrics,"Créateurs avec ventes");
+      (tp.agencies||[]).forEach(ag=>{ const t=tapAg[ag.name]||(tapAg[ag.name]={name:ag.name,gmv:0,orders:0,com:0,videos:0,lives:0,crSamples:0,crContent:0,crSales:0}); t.gmv+=pf(ag.gmv); t.orders+=pf(ag.orders); t.com+=pf(ag.com); t.videos+=pf(ag.videos); t.lives+=pf(ag.lives); t.crSamples+=pf(ag.crSamples); t.crContent+=pf(ag.crContent); t.crSales+=pf(ag.crSales); });
+    }
+  }
+
+  const bTot=(bdLive+bdVid+bdFic)||1;
+  const pct=v=>Number(((v/bTot)*100).toFixed(1));
+
+  MONTHS["cumul"]={
+    label:"Cumul 2026",
+    updated:MONTHS["2026-10"]?MONTHS["2026-10"].updated:"",
+    boutique:{
+      period:"Cumul 2026 · septembre → octobre",
+      compare:"somme de tous les mois",
+      rank:"— (vue cumulée)",
+      metrics:[ {label:"GMV",value:fmtE(bGMV),delta:null},{label:"Commandes",value:fmtN(bCmd),delta:null},{label:"Clients",value:fmtN(bCli),delta:null},{label:"Articles vendus",value:fmtN(bArt),delta:null} ],
+      breakdown:[ {name:"Lives",value:Number(bdLive.toFixed(2)),pct:pct(bdLive),color:"#10b981"},{name:"Vidéos",value:Number(bdVid.toFixed(2)),pct:pct(bdVid),color:"#f5b301"},{name:"Fiches produit",value:Number(bdFic.toFixed(2)),pct:pct(bdFic),color:"#3b5bdb"} ]
+    },
+    ads:{
+      period:"Cumul 2026 · septembre → octobre",
+      cmp:"Compte GMV Max · CINEREPLICAS FR — somme des mois",
+      metrics:[ {label:"Coût",value:fmtE(adCost),delta:null},{label:"Commandes SKU",value:fmtN(adSku),delta:null},{label:"Coût / commande",value:adSku>0?fmtE(adCost/adSku):"—",delta:null},{label:"Revenu brut",value:fmtE(adRev),delta:null},{label:"ROI moyen",value:adCost>0?(adRev/adCost).toFixed(2).replace('.',','):"—",delta:null} ]
+    },
+    affiliate:{
+      period:"Cumul 2026 · affiliés (collaboration)",
+      compare:"somme de tous les mois",
+      metrics:[ {label:"GMV attribué (créateurs)",value:fmtE(afGMV),delta:null},{label:"Articles vendus",value:fmtN(afArt),delta:null},{label:"Remboursements",value:fmtE(afRemb),delta:null},{label:"Commission est.",value:fmtE(afCom),delta:null},{label:"Vidéos",value:fmtN(afVid),delta:null},{label:"Lives",value:fmtN(afLive),delta:null} ],
+      creators:[],
+      creatorsNote:"Vue cumulée : le détail par créateur n'est pas agrégé ici (les métriques diffèrent d'un mois à l'autre). Consultez chaque onglet mensuel pour le classement des créateurs."
+    },
+    videosDaily:{
+      period:"Cumul 2026 · vidéos publiées par mois",
+      totalVideos:vTot, totalGmv:fmtE(vGmv), totalOrders:vOrd,
+      days:mLabels, videos:mVideos, gmv:mGmv
+    },
+    videosList:[],
+    videosListNote:"Vue cumulée : la liste détaillée des vidéos est disponible dans chaque onglet mensuel.",
+    samples:{
+      period:"Cumul 2026 · échantillons",
+      metrics:[ {label:"Échantillons expédiés",value:fmtN(saExp),delta:null},{label:"Content GMV",value:fmtE(saGMV),delta:null},{label:"COGS est.",value:fmtE(saCogs),delta:null},{label:"Frais de port est.",value:fmtE(saPort),delta:null},{label:"Contenus",value:fmtN(saCont),delta:null},{label:"ROI cumulé (GMV/COGS)",value:saCogs>0?(saGMV/saCogs).toFixed(2).replace('.',','):"—",delta:null} ],
+      breakdown:[ {name:"Approuvé manuel",value:sbManu,color:"#3b5bdb"},{name:"Produit d'essai gratuit",value:sbGrat,color:"#14b8a6"},{name:"Partenaire",value:sbPart,color:"#e64c9e"} ],
+      funnelNote:"Vue cumulée : le funnel de conversion 45 jours est propre à chaque mois. Consultez chaque onglet mensuel."
+    },
+    tap:lastTap,
+    tapPerf:{
+      period:"Cumul 2026 · partenariats TAP (démarré en juillet)",
+      metrics:[ {label:"GMV TAP",value:fmtE(tapGMV),delta:null},{label:"Commandes",value:fmtN(tapCmd),delta:null},{label:"Commission est.",value:fmtE(tapCom),delta:null},{label:"Vidéos",value:fmtN(tapVid),delta:null},{label:"LIVES",value:fmtN(tapLive),delta:null},{label:"Créateurs avec ventes",value:fmtN(tapCrV),delta:null} ],
+      agencies:Object.values(tapAg).sort((x,y)=>y.gmv-x.gmv).map(t=>({name:t.name,gmv:fmtE(t.gmv),orders:fmtN(t.orders),com:fmtE(t.com),videos:fmtN(t.videos),lives:fmtN(t.lives),vv:"—",crSamples:fmtN(t.crSamples),crContent:fmtN(t.crContent),crSales:fmtN(t.crSales)})),
+      videosList:[]
+    },
+    actions:[ {title:"Cumul 2026 — synthèse", text:"<div style='font-size:14px;color:#374151;line-height:1.7'>Somme de tous les mois de 2026 (janvier → 15 juillet, juillet partiel). Boutique : <b>"+fmtE(bGMV)+"</b> de GMV, <b>"+fmtN(bCmd)+"</b> commandes. Affiliés : <b>"+fmtE(afGMV)+"</b> de GMV attribué. Shop Ads : <b>"+fmtE(adCost)+"</b> de coût pour <b>"+fmtE(adRev)+"</b> de revenu brut (ROI moyen "+(adCost>0?(adRev/adCost).toFixed(2).replace('.',','):'—')+"). Vidéos publiées : <b>"+fmtN(vTot)+"</b>. Échantillons expédiés : <b>"+fmtN(saExp)+"</b>.</div>" } ]
+  };
+})();
+
+
+render("2026-10");
+</script>
+</body>
+</html>
