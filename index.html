@@ -1,1 +1,252 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cinereplicas × TikTok Shop — tableau de bord 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout : une colonne, bandes de sections, tuiles de synthèse puis tableaux détaillés */
+:root{
+  --encre:#241a12; --encre-2:#73604f; --ligne:#ece0d4; --surface:#ffffff; --papier:#faf6f1;
+  --orange:#c2561a; --orange-doux:#f8e7d8;
+  --bon:#2f6f4f; --bon-fond:#e4f0e8; --mauvais:#a83f2e; --mauvais-fond:#f8e6e1;
+  --alerte-fond:#fdf3dc; --alerte:#8a5a00; --barre:#e0cdbb;
+  --titre:"Outfit","Segoe UI",system-ui,sans-serif;
+  --texte:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --encre:#f3e9e0; --encre-2:#b09783; --ligne:#3a2d23; --surface:#201811; --papier:#16100b;
+    --orange:#ef8c4c; --orange-doux:#3a2616;
+    --bon:#79c79b; --bon-fond:#1d3328; --mauvais:#f09484; --mauvais-fond:#3d221c;
+    --alerte-fond:#3a2e14; --alerte:#f0c46c; --barre:#4a3a2c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --encre:#f3e9e0; --encre-2:#b09783; --ligne:#3a2d23; --surface:#201811; --papier:#16100b;
+  --orange:#ef8c4c; --orange-doux:#3a2616;
+  --bon:#79c79b; --bon-fond:#1d3328; --mauvais:#f09484; --mauvais-fond:#3d221c;
+  --alerte-fond:#3a2e14; --alerte:#f0c46c; --barre:#4a3a2c;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font-family:var(--texte);font-size:15px;line-height:1.55;font-variant-numeric:tabular-nums}
+.wrap{max-width:1060px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+a{color:var(--orange)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 
+.interne{background:var(--alerte-fond);color:var(--alerte);border-radius:10px;padding:14px 18px;font-size:13.5px;margin-bottom:28px}
+.interne strong{font-weight:700}
+.interne ul{margin:8px 0 0;padding-left:18px}
+.interne li+li{margin-top:4px}
+
+header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.marque{font-family:var(--titre);font-weight:800;font-size:23px;letter-spacing:-.02em}
+.marque span{color:var(--orange)}
+.meta{color:var(--encre-2);font-size:13.5px;text-align:right;min-width:0}
+
+.hero{background:var(--surface);border:1px solid var(--ligne);border-radius:16px;padding:28px;margin-bottom:18px}
+.hero h1{font-family:var(--titre);margin:0 0 6px;font-size:15px;font-weight:600;color:var(--encre-2);text-wrap:balance}
+.big{font-family:var(--titre);font-size:clamp(38px,6.5vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.big small{font-size:.36em;font-weight:600;color:var(--encre-2);letter-spacing:0}
+.piste{position:relative;height:14px;background:var(--orange-doux);border-radius:7px;margin:22px 0 8px}
+.piste .plein{position:absolute;inset:0 auto 0 0;background:var(--orange);border-radius:7px}
+.piste .rythme{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--encre)}
+.legende{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--encre-2)}
+.puces{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.puce{border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600;background:var(--orange-doux)}
+.puce.bon{background:var(--bon-fond);color:var(--bon)}
+.puce.mauvais{background:var(--mauvais-fond);color:var(--mauvais)}
+
+.lecture{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border:1px solid var(--ligne);border-radius:16px;margin-bottom:40px}
+.lecture>div{padding:20px 22px;min-width:0}
+.lecture>div+div{border-left:1px solid var(--ligne)}
+.lecture h3{font-family:var(--titre);margin:0 0 6px;font-size:14px;color:var(--orange);font-weight:700}
+.lecture p{margin:0;font-size:14.5px}
+@media (max-width:760px){.lecture{grid-template-columns:1fr}.lecture>div+div{border-left:0;border-top:1px solid var(--ligne)}}
+
+h2{font-family:var(--titre);font-size:21px;font-weight:700;letter-spacing:-.02em;margin:44px 0 6px;text-wrap:balance}
+.sous{color:var(--encre-2);font-size:13.5px;margin:0 0 14px}
+
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--ligne);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:540px}
+th,td{padding:10px 14px;text-align:right;border-bottom:1px solid var(--ligne);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+thead th{font-size:12.5px;font-weight:700;color:var(--encre-2);background:var(--papier)}
+tbody tr:last-child td{border-bottom:0}
+td.v{font-weight:700}
+.haut{color:var(--bon)} .bas{color:var(--mauvais)} .plat{color:var(--encre-2)}
+td.bonf{background:var(--bon-fond)} td.mauvaisf{background:var(--mauvais-fond)}
+.note{font-size:12.5px;color:var(--encre-2);margin:8px 2px 0}
+
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:860px){.deux{grid-template-columns:1fr}}
+
+.tunnel{background:var(--surface);border:1px solid var(--ligne);border-radius:12px;padding:18px 20px}
+.etape{display:grid;grid-template-columns:minmax(0,150px) 1fr 64px;align-items:center;gap:12px;margin:9px 0;font-size:14px}
+.barre{height:22px;background:var(--orange);border-radius:4px;min-width:3px}
+.etape .n{text-align:right;font-weight:700}
+
+.graph{background:var(--surface);border:1px solid var(--ligne);border-radius:12px;padding:16px 12px 8px;overflow-x:auto}
+.graph svg{display:block;width:100%;min-width:420px;height:auto}
+.graph text{fill:var(--encre-2);font-size:12px;font-family:var(--texte)}
+.graph .lbl{fill:var(--encre);font-weight:700}
+
+footer{margin-top:48px;color:var(--encre-2);font-size:12.5px}
+</style>
+
+<div class="wrap">
+
+  
+
+  <header class="top">
+    <div class="marque">cine<span>replicas</span> × TikTok Shop France</div>
+    <div class="meta">Novembre 2026 à date, 1<sup>er</sup> → 15 novembre (relevé du 16/11)<br>Comparé à la même période d'octobre</div>
+  </header>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <h1 id="h-hero">GMV de l'opération calendriers, contre l'objectif de 120 000 €</h1>
+    <div class="big">76 367 € <small>soit 64 % de l'objectif</small></div>
+    <div class="piste" role="img" aria-label="64 % de l'objectif atteint, 69 % de la période écoulée">
+      <div class="plein" style="width:63.6%"></div>
+      <div class="rythme" style="left:68.7%"></div>
+    </div>
+    <div class="legende"><span>0 €</span><span>1<sup>er</sup> octobre → 6 décembre — 69 % de la période écoulée (trait noir)</span><span>120 000 €</span></div>
+    <div class="puces">
+      <span class="puce bon">+20,9 % contre la même période d'octobre</span>
+      <span class="puce">678 commandes en novembre</span>
+      <span class="puce">Panier moyen 44,93 €</span>
+      <span class="puce mauvais">15 jours avant le 1<sup>er</sup> décembre</span>
+    </div>
+  </section>
+
+  <section class="lecture" aria-label="Lecture de la période">
+    <div>
+      <h3>Où on en est</h3>
+      <p>Novembre fait <strong>30 460 €</strong> sur les quinze premiers jours, contre 25 195 € sur la même période d'octobre. Le <strong>Black Friday a ouvert le 11 novembre</strong> et la campagne TikTok court jusqu'au 16 décembre, avec six calendriers inscrits et validés.</p>
+    </div>
+    <div>
+      <h3>Ce qui marche</h3>
+      <p>La boutique <strong>convertit nettement mieux</strong> : 0,50 % des clics deviennent une commande contre 0,30 % en octobre. Le panier monte de 7 % et les commandes de 12 %, sur <strong>un quart de trafic en moins</strong>. Côté contenu, 1 092 vidéos publiées par 191 créatrices.</p>
+    </div>
+    <div>
+      <h3>Point de vigilance</h3>
+      <p>Les impressions reculent de <strong>25 %</strong> et les clics de <strong>31 %</strong> contre octobre. La meilleure conversion compense pour l'instant, mais c'est la visibilité qui conditionne la fin de saison. Les calendriers se vendent jusqu'au 1<sup>er</sup> décembre.</p>
+    </div>
+  </section>
+
+  <h2>Boutique</h2>
+  <p class="sous">Trafic des produits, 1<sup>er</sup> → 15 novembre, comparé au 1<sup>er</sup> → 15 octobre. Taux de conversion = commandes rapportées aux clics produit.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Indicateur</th><th>1→15 nov.</th><th>1→15 oct.</th><th>Δ</th></tr></thead>
+    <tbody>
+      <tr><td>GMV</td><td class="v bonf">30 460,04 €</td><td>25 194,69 €</td><td class="haut">▲ 20,9 %</td></tr>
+      <tr><td>Commandes</td><td class="v">678</td><td>603</td><td class="haut">▲ 12,4 %</td></tr>
+      <tr><td>Articles vendus</td><td class="v">747</td><td>634</td><td class="haut">▲ 17,8 %</td></tr>
+      <tr><td>Panier moyen</td><td class="v">44,93 €</td><td>41,78 €</td><td class="haut">▲ 7,5 %</td></tr>
+      <tr><td>Articles par commande</td><td class="v">1,10</td><td>1,05</td><td class="haut">▲ 4,8 %</td></tr>
+      <tr><td>Clients estimés</td><td class="v">662</td><td>591</td><td class="haut">▲ 12,0 %</td></tr>
+      <tr><td>Impressions produit</td><td class="v">8 322 056</td><td>11 163 897</td><td class="bas">▼ 25,5 %</td></tr>
+      <tr><td>Clics produit</td><td class="v">143 183</td><td>206 429</td><td class="bas">▼ 30,6 %</td></tr>
+      <tr><td>Taux de clic</td><td class="v">1,72 %</td><td>1,85 %</td><td class="bas">▼ 0,13 pt</td></tr>
+      <tr><td>Taux de conversion</td><td class="v bonf">0,50 %</td><td>0,30 %</td><td class="haut">▲ 0,20 pt</td></tr>
+      <tr><td>Part de la GMV — affiliés</td><td class="v">91,4 %</td><td>96,5 %</td><td class="plat">▼ 5,2 pts</td></tr>
+      <tr><td>Part de la GMV — fiche produit</td><td class="v">8,4 %</td><td>3,5 %</td><td class="haut">▲ 5,0 pts</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">La boutique vend davantage avec moins de trafic : le gain vient entièrement de la conversion et du panier. La part vendue directement depuis la fiche produit, sans passer par une créatrice, a plus que doublé.</p>
+
+  <h2>Publicité (GMV Max)</h2>
+  <p class="sous">Compte CINEREPLICAS FR, 1<sup>er</sup> → 15 novembre. Le point mort est le ROAS en dessous duquel la publicité ne se rembourse plus.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Indicateur</th><th>1→15 novembre</th></tr></thead>
+    <tbody>
+      <tr><td>Dépense</td><td class="v">1 652,85 €</td></tr>
+      <tr><td>Part de la GMV réinvestie</td><td class="v">5,4 %</td></tr>
+      <tr><td>ROAS</td><td class="v bonf">13,26</td></tr>
+      <tr><td>Point mort ROAS</td><td class="v">7,5</td></tr>
+      <tr><td>Commandes venant des annonces</td><td class="v">472</td></tr>
+      <tr><td>Coût par commande</td><td class="v">3,50 €</td></tr>
+      <tr><td>Revenu brut des annonces</td><td class="v">21 920,85 €</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Le ROAS est à près du double du point mort — c'est de loin le meilleur rendement publicitaire de notre portefeuille. L'engagement pris auprès de TikTok de réinvestir 5 % de la GMV est tenu.</p>
+
+  <h2>Contenu et créatrices</h2>
+  <p class="sous">Vidéos mises en ligne du 1<sup>er</sup> au 15 novembre, avec leurs résultats sur la période.</p>
+  <div class="deux">
+    <div>
+      <div class="tunnel">
+        <div class="etape"><span>Vidéos publiées</span><div class="barre" style="width:100%"></div><span class="n">1 092</span></div>
+        <div class="etape"><span>Créatrices distinctes</span><div class="barre" style="width:17%"></div><span class="n">191</span></div>
+        <div class="etape"><span>Avec au moins une vente</span><div class="barre" style="width:7%"></div><span class="n">74</span></div>
+        <p class="note">72,8 vidéos par jour, 1 058 vues en moyenne par vidéo, 1 155 588 vues cumulées. <strong>6,8 % des vidéos génèrent une vente</strong>.</p>
+      </div>
+    </div>
+    <div>
+      <div class="tunnel">
+        <div class="etape"><span>Samples expédiés</span><div class="barre" style="width:100%"></div><span class="n">97</span></div>
+        <p class="note">Samples envoyés du 1<sup>er</sup> au 15 novembre, soit 6,5 par jour. 244 demandes de créatrices restent en attente de traitement dans le Centre d'affiliation.</p>
+        <p class="note">Une vidéo continue de vendre plusieurs semaines après sa publication : le rendement des vidéos de novembre n'est pas encore complet.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Calendriers</h2>
+  <p class="sous">Répartition de la GMV du 1<sup>er</sup> au 15 novembre.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Calendrier</th><th>GMV</th><th>Commandes</th><th>Articles</th><th>Part</th></tr></thead>
+    <tbody>
+      <tr><td>KPop Demon Hunters 2026</td><td class="v">9 733,11 €</td><td>243</td><td>259</td><td>32,0 %</td></tr>
+      <tr><td>Scène KPop Demon Hunters 2026</td><td class="v">6 272,17 €</td><td>127</td><td>134</td><td>20,6 %</td></tr>
+      <tr><td>Maillot des Bleus 2026</td><td class="v">5 366,73 €</td><td>111</td><td>115</td><td>17,6 %</td></tr>
+      <tr><td>One Piece Chopper 2026</td><td class="v">4 399,45 €</td><td>92</td><td>94</td><td>14,4 %</td></tr>
+      <tr><td>Brawl Stars Mega Box 2026</td><td class="v">2 649,82 €</td><td>59</td><td>64</td><td>8,7 %</td></tr>
+      <tr><td>Harry Potter Hogwarts</td><td class="v">1 416,97 €</td><td>54</td><td>55</td><td>4,7 %</td></tr>
+      <tr><td>Naruto Orbe Tourbillonnant 2026</td><td class="v">304,40 €</td><td>7</td><td>7</td><td>1,0 %</td></tr>
+      <tr><td>Autres (Équipe de France 2024, Carte du Maraudeur)</td><td class="v">195,34 €</td><td>8</td><td>8</td><td>0,6 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Les deux KPop Demon Hunters réunis font <strong>plus de la moitié de la GMV</strong> du mois. Brawl Stars progresse nettement sur la seconde quinzaine.</p>
+
+  <h2>L'opération mois par mois</h2>
+  <p class="sous">GMV sur la période engagée, du 1<sup>er</sup> octobre au 6 décembre. Novembre à date.</p>
+  <div class="graph">
+    <svg viewBox="0 0 700 230" role="img" aria-label="GMV d'octobre et de novembre à date pour Cinereplicas">
+      <g id="barres"></g>
+    </svg>
+  </div>
+  <p class="note">Octobre complet 45 907 €, novembre 30 460 € au 15. Il reste <strong>43 633 €</strong> à réaliser sur les 21 derniers jours de la période pour atteindre l'objectif.</p>
+
+  <footer>Données extraites du TikTok Seller Center et du Centre d'affiliation · tableau de bord Cinereplicas, Sesame Digital.</footer>
+</div>
+
+<script>
+(function(){
+  var mois=[{m:"Octobre",v:45907},{m:"Novembre à date",v:30460,cur:true}];
+  var g=document.getElementById('barres'),ns='http://www.w3.org/2000/svg';
+  var max=50000, base=180, h=140, bande=560/mois.length;
+  mois.forEach(function(d,i){
+    var x=70+i*bande, bh=d.v/max*h, y=base-bh;
+    var r=document.createElementNS(ns,'rect');
+    r.setAttribute('x',x+bande*0.22); r.setAttribute('y',y);
+    r.setAttribute('width',bande*0.56); r.setAttribute('height',bh); r.setAttribute('rx',4);
+    r.setAttribute('fill',d.cur?'var(--orange)':'var(--barre)');
+    var t=document.createElementNS(ns,'title');
+    t.textContent=d.m+' : '+d.v.toLocaleString('fr-FR')+' €'; r.appendChild(t);
+    g.appendChild(r);
+    var v=document.createElementNS(ns,'text');
+    v.setAttribute('x',x+bande/2); v.setAttribute('y',y-9);
+    v.setAttribute('text-anchor','middle'); v.setAttribute('class','lbl');
+    v.textContent=(Math.round(d.v/100)/10).toLocaleString('fr-FR')+' k€';
+    g.appendChild(v);
+    var l=document.createElementNS(ns,'text');
+    l.setAttribute('x',x+bande/2); l.setAttribute('y',206);
+    l.setAttribute('text-anchor','middle'); l.textContent=d.m;
+    g.appendChild(l);
+  });
+})();
+</script>
+
+</body></html>
